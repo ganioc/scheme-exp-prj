@@ -134,3 +134,34 @@ samplelst
 (list-ref '(a b c) (list-index 'b '(a b c)))
 
 
+;;;; Exercise 4
+(define vector-index-helper
+  (lambda (s vos index)
+    (if (eq? (vector-length vos) 0)
+	-1
+	(if (eq? s (vector-ref vos index))
+	    index
+	    (vector-index-helper s vos (+ 1 index))))
+    ))
+(define vector-index
+  (lambda (s vos)
+    (if (eq? (vector-length vos) 0)
+	-1
+	(vector-index-helper s vos 0)
+	)
+    ))
+
+(vector-index 'c '#(a b c d))
+
+(vector-ref '#(a b c) (vector-index 'b '#(a b c)))
+
+;;;; Exercise 5
+(define ribassoc
+  (lambda (s los v fail-value)
+    "Nonsense"
+    ))
+
+(ribassoc 'a '() 'a '0)
+
+
+
