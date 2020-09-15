@@ -180,3 +180,20 @@ samplelst
   )
 
 (filter-in number? '(a 2 (1 3) b 7))
+
+;; Exercise 7
+;; I think it is an excellent solution, using recursion.
+(define product
+  (lambda (los1 los2)
+    (if (or (null? los1) (null? los2)) 
+	'()
+	(cons (list (car los1) (car los2))
+	      (append (product (list (car los1)) (cdr los2))
+		    (product (cdr los1)  los2))))
+	 
+	)
+    )
+
+(product '(a b c ) '(x y))
+
+
