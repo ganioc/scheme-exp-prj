@@ -163,5 +163,20 @@ samplelst
 
 (ribassoc 'a '() 'a '0)
 
+;;;;Exercise 6
+;; (define filter-in-helper
+;;   (lambda ()))
 
+(define filter-in
+  (lambda (predic lst)
+    (if (null? lst)
+	'()
+	(if (predic (car lst))
+	    (cons (car lst) (filter-in predic (cdr lst)))
+	    (filter-in predic (cdr lst))
+	    )
+	)
+    ) 
+  )
 
+(filter-in number? '(a 2 (1 3) b 7))
