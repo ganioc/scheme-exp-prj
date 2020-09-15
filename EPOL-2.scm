@@ -197,3 +197,25 @@ samplelst
 (product '(a b c ) '(x y))
 
 
+;; Exercise 8
+;; Beautiful implementation.
+(define swapper
+  (lambda (s1 s2 slst)
+    (cond ((null? slst) '())
+	  ((eq? s1 (car slst)) (begin
+				 (cons s2
+				       (swapper s1 s2 (cdr slst)))))
+	  ((eq? s2 (car slst)) (begin
+				 (cons s1
+				       (swapper s1 s2 (cdr slst)))))
+	  ((pair? (car slst)) (begin
+				(cons (swapper s1 s2 (car slst))
+				      (swapper s1 s2 (cdr slst)))
+				))
+	  (else (begin
+		  (cons (car slst)
+		  (swapper s1 s2 (cdr slst)))
+		  )))))
+
+(swapper 'a 'd '(a b c d)) 
+(swapper 'x 'y '((x) y (z (x))))
