@@ -47,9 +47,20 @@
   (lambda (f)
     (lambda (a)
       (lambda (b)
-	(f a b))
+	(f (string-append a b))))))
+(((curry2 display) "Fu Hao") "Wu Ding")
+;; (((curry2 "Fu") "Wu") 'display)
+
+(define curry-me
+  (lambda (f)
+    (lambda (s)
+      (lambda (t)
+	(f s)
+	)
       )))
-((( curry2 display) "Fu Hao") "Wu Ding")
+;; (() (curry-me display) "a b c d e f g")
+(((curry-me display) "Fu") "t") 
+(((curry2 display) "Qian Ji Nian") " -*-")  
 
 (define plus
   (lambda x
@@ -74,7 +85,7 @@
   (lambda (lst)
     (if (null? lst)
 	'()
-	(append ((list-ref (car lst) 0) (list-ref (car lst) 1) )
+	(cons (cons (list-ref (car lst) 1) (list-ref (car lst) 0) )
 	      (invert (cdr lst))))
     )
   )
@@ -86,8 +97,8 @@ samplelst
 (display samplelst)
 (display (cdar samplelst))
 (display (caar samplelst))
-( (cdar samplelst) (caar samplelst))
-
+(cons (cdar samplelst) (caar samplelst))
+(list (cdar samplelst) (caar samplelst))
 
 (define loopsamplelst
   (lambda (lst)
