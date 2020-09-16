@@ -259,4 +259,20 @@ samplelst
 
 ;;; Exercise 2.2.8
 ;;  These are a bit harder.
-;; 
+;; 1
+(define down
+  (lambda (lst)
+    (cond ((null? lst) '())
+	  (else (cons (list (car lst))
+		      (down (cdr lst))
+		      ))
+	  )
+    ))
+(down '(1 2 3))
+(down '(a (more (complicated)) object))
+
+;; 2
+
+
+
+
