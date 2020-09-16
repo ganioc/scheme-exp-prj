@@ -286,4 +286,29 @@ samplelst
 (up '((1 2) (3 4)))
 (up '((x (y)) z))
 
+;; 3
+;; count-occurrences
+(define count-occurrences
+  (lambda (s slst)
+    (cond ((null? slst) 0)
+	  ((pair? slst)  (+ (count-occurrences s (car slst))
+			    (count-occurrences s (cdr slst))
+			    ))
+	  ((eq? slst s) 1 )
+	  (else 0)
+	  )
+    ))
+(count-occurrences  '1 '(1 2))
+(count-occurrences 'x '(x y z))
+(count-occurrences 'x '((f x) y (((x z) x))))
+(count-occurrences 'w '((f x) y (((x z) x))))
+
+;; 4
+;; flatten
+(define flatten
+  (lambda (slst)
+
+    ))
+
+
 
