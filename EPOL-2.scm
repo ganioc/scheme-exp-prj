@@ -307,8 +307,17 @@ samplelst
 ;; flatten
 (define flatten
   (lambda (slst)
-
+    (cond ((null? slst) '() )
+	  ((pair? (car slst)) (append '()
+				      (flatten (car slst))
+				      (flatten (cdr slst))
+				      ))
+	  (else (append '() (list (car slst))
+			(flatten (cdr slst) )))
+	  )
     ))
+(flatten '(a b c))
+(flatten '((a b) c  (((d)) e)))
 
 
 
