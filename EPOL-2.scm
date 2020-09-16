@@ -319,5 +319,26 @@ samplelst
 (flatten '(a b c))
 (flatten '((a b) c  (((d)) e)))
 
+;; 5
+;; merge , ascending order lists
+(define merge
+  (lambda (lon1 lon2)
+    (cond ((null? lon1) lon2)
+	  ((null? lon2) lon1)
+	  (else (let ((h1 (car lon1))
+		      (h2 (car lon2)))
+		  (cond ((<= h1 h2) (append '()
+					   (list  h1)
+					   (merge (cdr lon1) lon2)))
+			(else (append '()
+				      (list h2)
+				      (merge (cdr lon2) lon1)))
+			)
+		  ))
+	  )
+    ))
+(merge '(1 4) '(1 2 8))
+(merge '(35 62 81 90 91) '(3 83 85 90))
+
 
 
