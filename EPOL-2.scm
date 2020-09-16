@@ -272,7 +272,18 @@ samplelst
 (down '(a (more (complicated)) object))
 
 ;; 2
-
-
+;; up
+(define up
+  (lambda (lst)
+    (cond ((null? lst) '())
+	  ((list? (car lst)) (append
+			      (list (car (car lst)))
+			      (cdr (car lst))
+			      (up (cdr lst))
+			      )) 
+	  (else (append (list (car lst))  (up (cdr lst))))
+    )))
+(up '((1 2) (3 4)))
+(up '((x (y)) z))
 
 
