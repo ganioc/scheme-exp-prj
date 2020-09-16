@@ -230,3 +230,33 @@ samplelst
 
 (swapper 'a 'd '(a b c d)) 
 (swapper 'x 'y '((x) y (z (x))))
+
+;; Exercise 9
+;; For invert sequence
+(define rotate
+  (lambda (los)
+    (cond ((eqv? (length los) 1) (list (car los) ))
+	  (else (append (rotate (cdr los)) (list (car los))))
+	  )
+    ))
+(rotate '(a b c d))
+(define rotate-last-helper
+  (lambda (los pre)
+    (cond ((eqv? (length los) 1) (append (list (car los))
+					 pre))
+	  (else (rotate-last-helper (cdr los)
+				    (append pre (list (car los)))))
+	  )
+    ))
+(define rotate-last
+  (lambda (los)
+    (cond ((null? los) '())
+	  (else (rotate-last-helper los '()))
+	  )))
+(rotate-last '(a b c d))
+(rotate-last '(notmuch))
+(rotate-last '())
+
+;;; Exercise 2.2.8
+;;  These are a bit harder.
+;; 
