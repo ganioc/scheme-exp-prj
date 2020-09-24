@@ -341,4 +341,107 @@ samplelst
 (merge '(35 62 81 90 91) '(3 83 85 90))
 
 
+;; Exercise 2.2.9
+;; These are harder still
+;; 1 path
+;; (define path-helper
+;;   (lambda (value lst pathlst)
+;;     (let ((val (list-ref lst 0))
+;; 	  (left-lst (list-ref lst 1))
+;; 	  (right-lst (list-ref lst 2)))
+;;       (if (eq? value val)
+;; 	  (pathlst)
+;; 	  ;; If left-lst not empty
+;; 	  (if (not (null? left-lst))
+;; 	      (path-helper value left-lst (append pathlst '(L)))
+;; 	      ;; else if right-lst not empty
+;; 	      (if (not (null? right-lst))
+;; 		  (path-helper value right-lst (append pathlst '(R)))
+;; 		  )
+;; 	      )
+;; 	  )
+;;       )
+;;     ))
+;; (define path
+;;   (lambda (value lst)
+;;     (if (eq? value (list-ref lst 0))
+;; 	'()
+;; 	(path-helper value lst  '()))
+;;     ))
+
+;; (path 8 '(8 () ()))
+(define list2.2.9 '(1 (14 () ())
+		      (7 () ()))
+  )
+(define list2.2.9-2 '(14 (7 () (12 () ()))
+			 (26 (20 (17 () ())
+				 ())
+			     (30 () ()))))
+(define mypath-helper
+  (lambda (value lst pathlst)
+    (let ((val (list-ref lst 0))
+	  (left-lst (list-ref lst 1))
+	  (right-lst (list-ref lst 2)))
+      (display "\nCurrent val:")
+      (display val )
+      (if (eq? val value)
+	  pathlst
+	  (if (and (null? left-lst)
+	  	   (null? right-lst))
+	      '()
+	      (if (not (null? left-lst))
+	  	  (let ((left-fb (mypath-helper value
+	  					left-lst
+	  					(append pathlst '(L)))))
+	  	    (if (not (null? left-fb)) 
+	  		left-fb
+	  		(if (not (null? right-lst))
+	  		    (let ((right-fb (mypath-helper value
+	  						   right-lst
+	  						   (append pathlst  '(R)))))
+	  		      (if (not (null? right-fb))
+	  			  right-fb
+	  			  '())
+	  		      ))
+	  		)
+	  	    )
+		  ;; left is empty
+		  (if (not (null? right-lst))
+		      (let ((right-fb (mypath-helper value
+						     right-lst
+						     (append pathlst '(R)))))
+			(if (not (null? right-fb))
+			    right-fb
+			    '())
+			)
+		      )
+	  	  )
+	      )
+	  )
+      )
+    )
+  )
+(define mypath
+  (lambda (value lst)
+    (display value)
+    (if (eq? value (list-ref lst 0))
+	(begin
+	  (display "Found at root")
+	  (display value)
+	  '())
+	(mypath-helper value lst '())
+	)
+    ))
+
+(mypath 14 list2.2.9)
+
+;; Exercise 2.2.9 - 2
+;; car&cdr
+;; To generate a procedure
+(define car&cdr
+  (lambda (s lst errvalue)
+    (lambda (lst) (car lst))
+
+
+    ))
 

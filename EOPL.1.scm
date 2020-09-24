@@ -19,7 +19,7 @@
 
 ;; string
 (define s "This is a.")
-s
+
 (string? s)
 (string->symbol s)
 (string-length s)
