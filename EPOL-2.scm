@@ -438,10 +438,45 @@ samplelst
 ;; Exercise 2.2.9 - 2
 ;; car&cdr
 ;; To generate a procedure
+(define car&cdr-car
+  (lambda (s lst sym-lst)
+    ;; (display "\ncar&cdr-car\n")
+    ;; (display lst)
+    ;; (newline)
+    ;; (display sym-lst)
+    ;; (newline)
+    (if (pair? lst)
+	(car&cdr-helper s lst (list 'car sym-lst) )
+	(if (eq? lst s)
+	    (list 'car sym-lst) 
+	    '())
+	)
+    ))
+(define car&cdr-helper
+  (lambda (s lst sym-lst)
+    (if (null? lst)
+	'()
+	(let ((result (car&cdr-car s (car lst)
+				   sym-lst)))
+	  (if (null? result)
+	      (car&cdr-helper s (cdr lst)
+			   (list 'cdr sym-lst))
+	      result
+	      )
+	  )
+	)))
 (define car&cdr
   (lambda (s lst errvalue)
-    (lambda (lst) (car lst))
-
-
-    ))
-
+    ;; '(lambda (lst) (car lst))
+    ;; (debug)
+    (let ((result (car&cdr-helper s lst 'lst) )
+	  )
+      (if (null? result)
+	  errvalue
+	  (append '(lambda (lst)) (list result) )
+	  )
+      )))
+(car&cdr 'a '(a b c) 'fail)
+(car&cdr 'c '(a b c) 'fail)
+(car&cdr 'dog '(cat lion (fish dog) pig) 'fail)
+(car&cdr 'a '(b c) 'fail)
