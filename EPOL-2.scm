@@ -537,4 +537,46 @@ samplelst
 (car&cdr2 'dog '(cat lion (fish dog) pig) 'fail)
 (car&cdr2 'a '(b  c) 'fail)
 
+;; Page 79
+;; Exercise 4
+(define list-last
+  (lambda (lst)
+    (let ((len (length lst)))
+      (if (eq? 0 len)
+	  '()
+	  (list-ref lst (- len 1))
+	  )
+      )
+    ))
+(define list-remove-helper
+  (lambda (lst)
+    (if (null? (cddr lst))
+	(car lst)
+	(cons (car lst) (list-remove-helper (cdr lst)))
+       )
+    ))
+(define compose-helper
+  (lambda (proc-lst param-lst)
+    (let ((proc (list-last)))
+      (if (null? proc)
+	  param-lst
+	  (compose-helper (list-remove-helper proc-lst)
+			  (proc param-lst)
+			  )
+	  )
+      )
+    ))
+(define compose
+  (lambda proc-lst
+    (lambda (param-lst)
+      (if (null? proc-lst)
+	  param-lst
+	  (compose-helper  proc-lst param-lst)
+	  )
+      ) 
+    ))
+((compose) '(a b c d))
+
+
+
 
