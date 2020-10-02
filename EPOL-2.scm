@@ -540,13 +540,11 @@ samplelst
 ;; Page 79
 ;; Exercise 4
 (define list-last
-  (lambda (lst)
-    (let ((len (length lst)))
-      (if (eq? 0 len)
-	  '()
-	  (list-ref lst (- len 1))
-	  )
-      )
+  (lambda (lst)  
+    (if (null? (cdr lst))
+	(car lst)
+	(list-last (cdr lst))
+     )
     ))
 (define list-remove-helper
   (lambda (lst)
@@ -557,14 +555,17 @@ samplelst
     ))
 (define compose-helper
   (lambda (proc-lst param-lst)
-    (let ((proc (list-last)))
-      (if (null? proc)
-	  param-lst
-	  (compose-helper (list-remove-helper proc-lst)
-			  (proc param-lst)
-			  )
-	  )
-      )
+    (list? proc-lst)
+    ((car proc-lst) '(x y))
+    ((list-last proc-lst) '(x y))
+    ;; (let ((proc (apply list-last proc-lst)))
+    ;;   (if (null? proc)
+    ;; 	  param-lst
+    ;; 	  (compose-helper (list-remove-helper proc-lst)
+    ;; 			  (proc param-lst)
+    ;; 			  )
+    ;; 	  )
+    ;;   )
     ))
 (define compose
   (lambda proc-lst
@@ -576,6 +577,7 @@ samplelst
       ) 
     ))
 ((compose) '(a b c d))
+((compose car) '(a b c d))
 
 
 
