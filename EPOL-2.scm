@@ -548,24 +548,25 @@ samplelst
     ))
 (define list-remove-helper
   (lambda (lst)
-    (if (null? (cddr lst))
-	(car lst)
+    (if (null? (cdr lst))
+	'()
 	(cons (car lst) (list-remove-helper (cdr lst)))
        )
     ))
 (define compose-helper
   (lambda (proc-lst param-lst)
-    (list? proc-lst)
-    ((car proc-lst) '(x y))
-    ((list-last proc-lst) '(x y))
-    ;; (let ((proc (apply list-last proc-lst)))
-    ;;   (if (null? proc)
-    ;; 	  param-lst
-    ;; 	  (compose-helper (list-remove-helper proc-lst)
-    ;; 			  (proc param-lst)
-    ;; 			  )
-    ;; 	  )
-    ;;   )
+    (if (null? proc-lst)
+	param-lst
+	(let ((proc (list-last proc-lst))
+	      (new-proc-lst (list-remove-helper proc-lst))
+	      )
+	  ;; (display proc)
+	  ;; (newline)
+	  ;; (display new-proc-lst)
+	  ;; (proc param-lst)
+	  (compose-helper new-proc-lst (proc param-lst)) 
+	  )	
+	)
     ))
 (define compose
   (lambda proc-lst
@@ -578,6 +579,13 @@ samplelst
     ))
 ((compose) '(a b c d))
 ((compose car) '(a b c d))
+((compose car cdr cdr) '(a b c d))
+
+;; Exerciese 5
+
+
+
+
 
 
 
