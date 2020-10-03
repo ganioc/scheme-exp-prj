@@ -615,6 +615,9 @@ samplelst
 	)
     )
   )
+;; Exercise 6
+;; sort 2 
+
 (define sort2-loop
   (lambda (pred ele lst rtn-lst)
     (if (null? lst)
@@ -646,7 +649,6 @@ samplelst
 (sort '(8 5 2 2 3))
 (sort2 < '(8 5 2 2 3))
 (sort2 > '(8 5 2 2 3))
-
 
 
 
