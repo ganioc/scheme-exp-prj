@@ -582,10 +582,70 @@ samplelst
 ((compose car cdr cdr) '(a b c d))
 
 ;; Exerciese 5
-
-
-
-
+;; Sort, which kind of sort method should be used?
+;; Bubble sorting method
+(define sort-loop
+  (lambda (ele lst rtn-lst)
+    (if (null? lst)
+	(cons ele rtn-lst) 
+	(if (< ele (car lst))
+	    (begin
+	      (sort-loop (car lst) (cdr lst) (cons ele rtn-lst))
+	      )
+	    (begin
+	      (sort-loop ele (cdr lst) (cons (car lst) rtn-lst))
+	      )
+	    )
+	)
+    ))
+(define sort-helper
+  (lambda (lst rtn-lst)
+    (if (null? lst)
+	rtn-lst
+	(let ((result (sort-loop (car lst) (cdr lst) '())))
+	  (sort-helper (cdr result) (cons (car result) rtn-lst))
+	  )
+	)
+    ))
+(define sort
+  (lambda (lst)
+    (if (null? lst)
+	'()
+	(sort-helper lst '())
+	)
+    )
+  )
+(define sort2-loop
+  (lambda (pred ele lst rtn-lst)
+    (if (null? lst)
+	(cons ele rtn-lst) 
+	(if (pred ele (car lst))
+	    (begin
+	      (sort2-loop pred (car lst) (cdr lst) (cons ele rtn-lst))
+	      )
+	    (begin
+	      (sort2-loop pred ele (cdr lst) (cons (car lst) rtn-lst))
+	      )
+	    )
+	)
+    ))
+(define sort2-helper
+  (lambda (pred lst rtn-lst)
+    (if (null? lst)
+	rtn-lst
+	(let ((result (sort2-loop pred (car lst) (cdr lst) '())))
+	  (sort2-helper pred (cdr result) (cons (car result) rtn-lst))
+	  )
+	)
+    ))
+(define sort2
+  (lambda (pred lst)
+    (sort2-helper pred lst '())
+    )
+  )
+(sort '(8 5 2 2 3))
+(sort2 < '(8 5 2 2 3))
+(sort2 > '(8 5 2 2 3))
 
 
 
