@@ -1,0 +1,26 @@
+    . /usr/share/bash-completion/bash_completion
+  elif [ -f /etc/bash_completion ]; then
+    . /etc/bash_completion
+  fi
+fi
+
+# export TERM=xterm-256color
+
+".bashrc" 116L, 3557C written
+debian@beaglebone:~$ df
+Filesystem     1K-blocks    Used Available Use% Mounted on
+udev              216828       0    216828   0% /dev
+tmpfs              49504    3168     46336   7% /run
+/dev/mmcblk0p1  15251344 3316820  11263924  23% /
+tmpfs             247512       0    247512   0% /dev/shm
+tmpfs               5120       4      5116   1% /run/lock
+tmpfs             247512       0    247512   0% /sys/fs/cgroup
+tmpfs              49500       8     49492   1% /run/user/1000
+debian@beaglebone:~$ echo ${TERM{
+> ;
+> ^C
+debian@beaglebone:~$ echo ${TERM}
+xterm-256color
+debian@beaglebone:~$
+
+

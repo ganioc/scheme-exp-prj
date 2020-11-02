@@ -1,0 +1,9 @@
+# The configure script fills in these values
+CC=@CC@
+CFLAGS=@GUILE_CFLAGS@
+LIBS=@GUILE_LIBS@
+
+sample: sample.o
+	${CC} sample.o ${LIBS} -o sample
+sample.o: sample.c
+	${CC} -c ${CFLAGS} sample.c
