@@ -1,8 +1,8 @@
-## How to use mit-scheme
+# How to use mit-scheme
 
 https://katex.org/docs/supported.html
 
-## How to write an interpreter?
+# How to write an interpreter?
 
 Reference Code:
 
@@ -11,7 +11,7 @@ Reference Code:
 
 ```
 
-### 1 Inductive of Set of Data
+## Chap 1 Inductive of Set of Data
 
 Definition of Grammar
 
@@ -66,7 +66,7 @@ Syntactic Derivation
 
 > $\implies(14 \centerdot ())$
 
-s-list, s-exp
+### s-list, s-exp
 
 $$S\text{--}list \Coloneqq (\{S\text{--exp}\}^*)$$
 $$S\text{--}exp \Coloneqq Symbol \mid S\text{--}list$$
@@ -75,9 +75,47 @@ LcExp (lambda expression)
 
 Context-free syntax
 
-### 2
+## Chap 2 Data Abstraction
 
-### 3 LET language
+zero=$\lceil0\rceil$, representation of 0
+
+is-zero?$\lceil{n}\rceil$
+
+successor
+
+predecessor
+
+### Representation Strategies for Data Types
+
+variables, represented by strings, by references into a hash table, even by numbers;
+
+### Environment Interface
+
+environment is a function whose domain is a finite set of variables, range is the set of Scheme values.
+
+{(var1, val1), (var2, val2), ... (varn, valn)}
+
+### define-datatype
+
+How to use defmacro to implement define-datatype?
+It's mentioned on the web that define-datatype annd cases are both macros. A macro driven implementation of algebraic data types.
+
+https://eli.thegreenplace.net/archives/all
+
+How to write define-datatype?
+
+Famous Authors:
+
+- Erik Hilsdale
+- D. Friedman
+- Mitchell Wand
+- Kent Dybvig (Chez Scheme)
+
+### cases
+
+How to write cases?
+
+## chap 3 LET language
 
 LET a simple language.
 
@@ -147,8 +185,8 @@ AST for expression exp
 
 ```
 
-###
+##
 
-### Current Breakpoint
+## Current Breakpoint
 
 Page 107
