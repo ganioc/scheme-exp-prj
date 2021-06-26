@@ -136,7 +136,9 @@ T_{3,-1}(x) &= -4+(-4)\cdot(x-(-1))+\frac{1}{2}\cdot(-8)\cdot(x-(-1))^2 \\
 \end{align*}
 $$
 
-## EOPL Version 1
+# EOPL Version 1
+
+So in book v1, extend-syntax is used. In book v3,
 
 ### Lambda Expression
 
@@ -280,7 +282,11 @@ Via interpreters to study the semantics of programming languages. Take the abstr
 
 ### A Simple Interpreter
 
-expressed values (possible values of expressions), denoted values (values bound to variables, cells containing expressed values)
+Procedures take the abstract syntax tree of a program and perform the indicated computation.
+
+Before learned procedures took data in the form of variant records and performed some action determined by the type of record.
+
+**expressed values** (possible values of expressions), **denoted values** (values bound to variables, cells containing expressed values)
 
 For simplicity , there are only two types of expressed values:
 
@@ -291,6 +297,66 @@ Denoted value &= Number + Procedure
 \end{align*}
 $$
 
-## EOPL Version 2
+There are 2 languages:
 
-## EOPL Version 3
+- defining language, in this case, it is Scheme.
+- defined language
+
+### variant-case (Page 165)
+
+what is variant-case, then?
+
+> From reddit [LINK](https://www.reddit.com/r/Racket/comments/imtqt9/need_help_porting_eopl_macros_to_racket/)
+> Earlier in the the first edition of the book, the authors define a couple of key macros define-record and variant-case which are used through out the book. I need help porting then to racket.
+
+And it's mentioned [here](https://gist.github.com/kesava/ec1518495387928d35ec9fc5a764ddbf) that the author provide source code for the macros in scheme in the appendix of the book.
+
+#### define-record
+
+#### variant-case
+
+**Note**
+I have to understand the difference between extend-syntax and define-syntax. The former is used by TSPL and book v1, and the latter is used in book v2. What a pitty that it's not expressed clearly in the book. You need to read all the backgound info to understand the situation.
+
+**Further Readings**
+<< SICP >>
+
+<< Godel, Escher, Bach: an Eternal Golden Braid, Douglas R. Hofstadter>>
+
+<< The Little Lisper>>
+
+<< Scheme and the art of Programming >>
+
+### Appendix A Record Implementation
+
+Here we see the new special forms of define-record and variant-cases
+
+extend-syntax
+
+### Appendix B Abstract Syntax
+
+For chapter 5.
+
+For chapter 6.
+
+For chapter 7.
+
+For chapter 9.
+
+For chapter 12.
+
+### Appendix C Character String Syntax
+
+### Appendix D Character String Parser
+
+For chapter 5.
+
+### Appendix E Character String Scanner
+
+### Appendix G List Structure Syntax
+
+### Appendix H List Structure Parser
+
+# EOPL Version 2
+
+# EOPL Version 3
