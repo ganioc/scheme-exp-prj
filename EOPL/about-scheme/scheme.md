@@ -47,17 +47,62 @@ Macro is a transformed code. Codes are transformed before being evaluated and co
 
 Syntax expander, for each top-level form.
 
+syntax-rules just return syntax transformer,
+
 ```scheme
 (define-syntax mylet
   (syntax-rules ()
     ((_ ((x v) ...) e1 e2 ...)
      ((lambda (x ...) e1 e2 ...) v ...))))
 
+(define-syntax when
+  (syntax-rules ()
+    ((when condition exp ...)
+      (if condition
+          (begin exp ...)))))
+
+(define-syntax myunless
+  (syntax-rules ()
+    ((_ condition exp ...)
+     (if (not condition)
+         (begin exp ...)))))
+
+
+(define-syntax myand
+  (syntax-rules ()
+    ((_) #t)
+    ((_ e) e)
+    ((_ e1 e2 e3 ...)
+     (if e1 (and e2 e3 ...) #f))))
+
+(define-syntax myor
+  (syntax-rules ()
+    ((_) #f)
+    ((_ e) e)
+    ((_ e1 e2 e3 ...)
+     (let ((t e1))
+       (if t t (or e2 e3 ...))))))
+
 (define testMylet
   (lambda ()
     (mylet ((a 1))
       (display "testMylet")
       (newline))))
+
+;; memq object list eq?
+;; memv object list, eqv?
+
+;; How to define let*
+;; Homemade let*, works right!
+(define-syntax mylet*
+  (syntax-rules ()
+    ((_ ((x1 v1)) e1 e2 ...)
+     (let ((x1 v1))
+       (begin e1 e2 ...)))
+    ((_ ((x1 v1) (x2 v2) ...) e1 e2 ...)
+     (let ((x1 v1))
+       (mylet* ((x2 v2) ...) e1 e2 ...)))))
+
 
 ```
 
@@ -318,6 +363,25 @@ And it's mentioned [here](https://gist.github.com/kesava/ec1518495387928d35ec9fc
 **Note**
 I have to understand the difference between extend-syntax and define-syntax. The former is used by TSPL and book v1, and the latter is used in book v2. What a pitty that it's not expressed clearly in the book. You need to read all the backgound info to understand the situation.
 
+## Scheme Implementation To use
+
+- Chez Scheme v9.9.5
+  - Which is from cisco, petty chez scheme is free with an interpreter. Good for book studying.
+  - NanoPass?
+  - REPL
+  - 增量编译器
+  - 跨过汇编直接生成二进制 Native Code 的
+  - 作者, Kent Dybvig,
+  - 从 Scheme 源程序一直编译到机器代码，而不依赖任何其他语言的编译器
+- Guile
+  - Only support define-syntax.
+- Racket
+  - Haven't touched it yet.
+  - Called PLT Scheme
+  - MIT Scheme
+
+### foreign function interface (FFI)
+
 **Further Readings**
 << SICP >>
 
@@ -360,3 +424,48 @@ For chapter 5.
 # EOPL Version 2
 
 # EOPL Version 3
+
+# TSPL4
+
+The Scheme Programming Language, 4th Edition,
+
+R6RS version, (Revised Report on Scheme)
+
+forms and procedures.
+
+# CSUG v4
+
+For Chez Scheme features and tools that are not part of R6RS,
+
+Chez Scheme Programming Language Version 9
+
+- automatic storage management
+- foreign-language interfaces
+- source level debugging
+- profiling support
+- extensive run-time library
+- threads, multi core, multi processor systems,
+
+## design consideration
+
+- reliability
+- efficiency
+
+### Identifier
+
+| |
+
+#{ }
+
+```
+(gensym)
+#{g1 igqhdla2tzdekd9179hovi1fr-2}
+
+#nr
+
+#&17 // box containing the integer 17
+
+
+```
+
+### fxvectors
