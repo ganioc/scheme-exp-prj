@@ -123,15 +123,51 @@ exp ... in the template produces zero or more expressions from the ellipsis prot
 (letrec-syntax)
 (fluid-let-syntax)
 
+(let name ((var val) ...)
+  exp1 exp2 ...)
+
+((letrec ((name (lambda (var ...) exp1 exp2 ... )))
+  name)
+  val ...)
+
+(letrec ((name (lambda (var ...) exp1 exp2 ...))
+  (name val ...))
+
+
+
 ```
+
+let is local bindings,
+
+letrec forms a set of variable-value pairs, could be used for mutually recursive procedures.
 
 ### Macro
 
 ### Continuation
 
 ```scheme
- (let ((x (call/cc (lambda (k) k)))
+(let ((x (call/cc (lambda (k) k)))
     (x (lambda (ignore) "hi")))
+
+(define product
+  (lambda (ls)
+    (call/cc
+     (lambda (break)
+       (let f ((ls ls))
+         (cond
+          ((null? ls) 1)
+          ((= (car ls) 0) (break 0))
+          (else (* (car ls) (f (cdr ls))))))))))
+
+(let ((x (call/cc (lambda (k) k))))
+  (x (lambda (ignore) "hi")))
+
+(define factorial
+    (lambda (x)
+      (if (= x 0)
+          (call/cc (lambda (k) (set! retry k) 1))
+          (* x (factorial (- x 1))))))
+
 
 ```
 
@@ -144,6 +180,193 @@ Continuation may be used to implement various forms of multitasking. The simple 
 Since it is nonpreempttive , it requires that each process voluntarily "pause" from time to time in order to allow the others to run.
 
 > 这是一个非常重要的特性！然而轻描淡写地提了一下。
+
+Continuation is what to evaluate and what to do.
+
+call/cc must be passed a procedure $p$ of one argument. call/cc constructs a concrete representation of the current continuation and passes it to p. The continuation itself is represented by a procedure $k$. Each time k is applied to a value, it returns the value to the continuation of the call/cc application. This value becomes , in essence, the value of the application of call/cc.
+
+If $p$ returns without invoking $k$, the value returned by the procedure becomes the value of the application of call/cc.
+
+It's hard to understand the underlying mechanism.
+
+**Light Weight Process**
+
+```scheme
+(define lwp-list '())
+;; Add a procedure into the list
+(define lwp
+  (lambda (thunk)
+    (set! lwp-list (append lwp-list (list thunk)))))
+;; 取出一个procedure, 执行之
+(define start
+  (lambda ()
+    (let ((p (car lwp-list)))
+      (set! lwp-list (cdr lwp-list))
+      (p))))
+;; 这段代码是运行的精髓之处！实际上是在队列里添加一个procedure, 然后开始start(取出一个procedure, 执行之)
+(define pause
+  (lambda ()
+    (call/cc (lambda (k)
+               (lwp (lambda () (k #f)))
+               (start)))))
+;; 执行语句, 这个语句实际上是无限循环执行；如果没有pause的话确实是无限循环执行。但是pause是怎么样工作的呢？
+(lwp (lambda () (let f () (pause) (display "e") (f))))
+
+;; lwp 即 ligth-weight process, lwp-list 是进程表，不难看出 lwp 和 start 的作用分别是添加一进程到进程表、和从进程表里取出一个进程并执行，理解这段程序的关键在于 pause。
+
+;; pause 是这些进程真正的调度者，它不仅有副作用，而且也不具有引用透明性，所以难以理解，我们分析一下。(lwp (lambda () (k #f))) 把 pause 的 continuation 添加到进程表尾，以备将来恢复。但注意，call/cc 能取出一个函数的全部未来，当然也包括这个函数执行完毕后的后续操作——每一个 lwp 调用 pause 之后的操作是“输出一个字符，然后再递归调用自己”，这些操作当然也在 pause 的 continuation 里面——
+
+(define search-element
+  (lambda (element lst)
+    (display (call/cc
+              (lambda (break)
+                (for-each (lambda (item)
+                            (if (equal? item element)
+                                (break #t)))
+                          lst)
+                #f)))
+                ;;; break to here
+    (display "End of\n")))
+
+(define my-for-each
+  (lambda (proc items)
+    (define iter
+      (lambda (things)
+        (cond ((null? things))
+              (else
+               (proc (car things))
+               (display "come back\n")
+               (iter (cdr things))))))
+    (iter items)))
+
+(define generate-one-element-at-a-time
+  (lambda (lst)
+    ;; continuation procedure
+    (define control-state
+      (lambda (return)
+        (my-for-each
+         (lambda (element)
+           (call/cc
+            (lambda (resume-here)
+              (set! control-state resume-here)
+              (return element))))
+         lst)
+        (return 'end)))
+    (lambda ()
+      (call/cc control-state))))
+
+;; cc作为一个参数的传递, 1st class
+(define (mytest element cc)
+  (if (zero? element)
+      (cc 'found-zero) ;; exit
+      (void)
+      ))
+
+(define (search-zero test lst)
+  (call/cc
+   (lambda (return)
+     (for-each
+      (lambda (element)
+        (test element return)
+        (printf "~a~%" element))
+      lst)
+     #f)))
+
+;; 移花接木
+
+(define dish #f)
+
+(define (put! fruit) (set! dish fruit))
+(define (get!) (let ([ fruit dish])
+                 (set! dish #f)
+                 fruit))
+
+(define (consumer do-other-stuff)
+  (let loop ()
+    (when dish
+      (printf "C: get a ~a~%" (get!))
+      (set! do-other-stuff
+        (call/cc do-other-stuff))
+      (loop))
+    ))
+
+(define (producer do-other-stuff)
+  (for-each
+   (lambda (fruit)
+     (put! fruit)
+     (printf "P: put a ~a~%" fruit)
+     (set! do-other-stuff
+       (call/cc do-other-stuff)))
+   '("apple" "pear" "strawberry" "peach" "grape")))
+
+
+```
+
+如何解释一下这段代码是怎样工作的呢？Explanations:
+
+- Representing a hole
+- 绑定的是函数的接下来的动作，使得函数在上次中断处重新开始
+- 另一种函数调用方式，不使用堆栈来保存上下文，而是把这些信息保存在 continuation record 中。continuaiton record 和堆栈的 activation record 的区别在于，它不采用后入先出的线性方式，而是所有的 record 组成一颗树，从一个函数调用另一个函数就相当于给当前节点生成一个子节点，然后把系统寄存器移动到这个子节点。一个函数的退出就相当于从当前节点退回到父节点。这些节点的删除是由 garbage collection 来管理。好处在于，它可以让你从任意一个节点跳到另一个节点，而不必遵循堆栈方式的一层一层的 retrun 方式。
+
+**continuation 的 3 个特性**
+
+- continuation as a first class,可以作为函数的参数被传递和返回
+- continuation is represented by procedure,表示将要做的事情
+- 假设 call/cc 捕捉了当前的 continuation, 并绑定到 lambda 的参数 cc,那么在 lambda 函数体内，一旦 cc 被直接或间接的作为过程调用，那么 call/cc 会立即返回，并且提供给 cc 的参数即为 call/cc 的返回值 ！
+
+**Other 特性**
+
+- Non-local exit, 非本地退出
+- Non Referential Transparent, 非引用透明性,
+
+**Escaping Continuations**
+
+**Tree Matching**
+
+```scheme
+(define tree->generator
+  (lambda (tree)
+    (let ((caller '*))
+      (letrec
+          ((generate-leaves
+            (lambda ()
+              (let loop ((tree tree))
+                (cond ((null? tree) 'skip)
+                      ((pair? tree)
+                       (loop (car tree))
+                       (loop (cdr tree)))
+                      (else
+                       (call/cc
+                        (lambda (rest-of-tree)
+                          (set! generate-leaves
+                            (lambda ()
+                              (rest-of-tree 'resume)))
+                          (caller tree))))))
+              (caller '()))))
+        (lambda ()
+          (call/cc
+           (lambda (k)
+             (set! caller k)
+             (generate-leaves))))))))
+
+(define same-fringe?
+  (lambda (tree1 tree2)
+    (let ((gen1 (tree->generator tree1))
+          (gen2 (tree->generator tree2)))
+      (let loop ()
+        (let ((leaf1 (gen1))
+              (leaf2 (gen2)))
+          (if (eqv? leaf1 leaf2)
+              (if (null? leaf1) #t (loop))
+              #f))))))
+
+```
+
+如何来理解这段程式呢？
+
+- When a generator created by tree‑>generator is called, it will store the continuation of its call in _caller_, so that it can know who to send the leaf to when it finds it.
+
+---
 
 $$
 \begin{align*}
