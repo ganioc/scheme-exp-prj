@@ -70,11 +70,13 @@
 	(for-each
 	 (lambda (element)
 	   ;; 为什么要在这里重新设置return呢?
-	   (set! return
-	     (call/cc
-	      (lambda (resume-here)
-		(set! control-state resume-here)
-		(return element)))))
+	   ;; 经过实验，发现确实不用set! return, 因为每次的return都是重新传入的，作为一个跳出call/cc的路径handler,
+	   ;; (set! return
+	   (call/cc
+	   ;; 在这里嵌入一个continuation, 用函数名control-state来存储当前的执行位置。resume-here没有其它的用处，只是一个运行位置的表示;
+	    (lambda (resume-here)
+	      (set! control-state resume-here)
+	      (return element))));; )
 	 lst)
 	(return 'empty-of-lst)
 	))
@@ -82,3 +84,54 @@
       (call/cc control-state))
     ))
   
+;; 接下来是一个 multitasking的例子
+;;
+
+(define ready-list '())
+
+(define exit
+  (let ((exit exit))
+    (lambda ()
+      (if (not (null? ready-list))
+	  (let ((cont (car ready-list)))
+	    (set! ready-list (cdr ready-list))
+	    (cont #f))
+	  (exit)))))
+
+;; This is a lazy operation
+(define (fork fn arg)
+  (set! ready-list
+    (append ready-list
+	    (list
+	     (lambda (x)
+	       (fn arg)
+	       (exit))))))
+
+
+(define (yield)
+  (call/cc
+   (lambda (cont)
+     (set! ready-list
+       (append ready-list
+	       (list cont)))
+
+     (let ((cont (car ready-list)))
+       (set! ready-list (cdr ready-list))
+       (cont #f))))
+  )
+
+;; (let* ((yin
+;; 	((lambda (cc)
+;; 	   (display #\@)
+;; 	   cc)
+;; 	 (call/cc
+;; 	  (lambda (c) c))))
+;;        (yang
+;; 	((lambda (cc)
+;; 	   (display #\*)
+;; 	   cc)
+;; 	 (call/cc
+;; 	  (lambda (c) c)))))
+;;   (yin yang))
+
+
