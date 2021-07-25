@@ -116,6 +116,8 @@ pattern variables, match ay substructure and are bound to that substructure with
 
 exp ... in the template produces zero or more expressions from the ellipsis prototype exp in the output.
 
+syntax expander,
+
 **Local Syntax**
 
 ```scheme
@@ -133,8 +135,33 @@ exp ... in the template produces zero or more expressions from the ellipsis prot
 (letrec ((name (lambda (var ...) exp1 exp2 ...))
   (name val ...))
 
+(define-syntax let*
+  (syntax-rules ()
+    ((_ () e1 e2 ...) (let () e1 e2 ...))
+    ((_ ((i1 v1) (i2 v2) ...) e1 e2 ...)
+      (let ((i1 v1))
+        (let* ((i2 v2) ...) e1 e2 ...)))))
 
+(let ((f (lambda (x) (+ x 1))))
+    (let-syntax ((g (syntax-rules ()
+                      ((_ x) (f x)))))
+      (let-syntax ((f (syntax-rules ()
+                        ((_ x) x))))
+        (g 1))))
 
+(let ((f (lambda (x) (+ x 1))))
+    (let-syntax ((g (syntax-rules ()
+                      ((_ x) (f x)))))
+      (fluid-let-syntax ((f (syntax-rules ()
+                              ((_ x) x))))
+                        (g 1))))
+
+                        (let ((f (lambda (x) (+ x 1))))
+    (let-syntax ((g (syntax-rules ()
+                      ((_ x) (f x)))))
+      (fluid-let-syntax ((f (syntax-rules ()
+                              ((_ x) x))))
+                        (g 1))))
 ```
 
 let is local bindings,
@@ -188,6 +215,18 @@ call/cc must be passed a procedure $p$ of one argument. call/cc constructs a con
 If $p$ returns without invoking $k$, the value returned by the procedure becomes the value of the application of call/cc.
 
 It's hard to understand the underlying mechanism.
+
+lexical binding
+
+top-level binding
+
+```scheme
+;; about binding
+
+
+```
+
+with-syntax
 
 **Light Weight Process**
 
@@ -365,6 +404,66 @@ It's hard to understand the underlying mechanism.
 如何来理解这段程式呢？
 
 - When a generator created by tree‑>generator is called, it will store the continuation of its call in _caller_, so that it can know who to send the leaf to when it finds it.
+- then calls an internal procedure called generate‑leaves which runs a loop traversing the tree from left to right. When the loop encounters a leaf, it will use caller to return the leaf as the generator’s result
+- but it will remember to store the rest of the loop (captured as a call/cc continuation) in the generate‑leaves variable.
+- the last thing generate‑leaves does, after the loop is done, is to return the empty list to the caller.
+- 将结果用 caller 返回, 用 generate-leaves 来记录 procedure 运行的位置
+- 每一次运行时，resumes its computation,
+- 如果进行一般化整理，做进一步的推导。可以互相之间调用，sending results back and forth amongst themselves. coroutines
+
+**Coroutines**
+
+```
+;; multi-tasking example, wikipedia上面讲得比较清楚
+
+
+
+```
+
+call/cc is used as a control flow operator. Resprents the future.
+
+**CPS**
+Continuation Passing Style. Can pass any number of arguments. Success, Failure continuations.
+
+Any program uses call/cc can be rewritten in CPS without call/cc??
+
+**do**
+
+**map**
+
+**apply**
+
+**dynamic-wind**
+
+**eval**
+
+```scheme
+
+(eval '(let ((x 3)) (cons x 4)) (scheme-report-environment 5))
+(scheme-report-environment 5)
+#<environment *r5rs*>
+(interaction-environment)
+#<environment *top*>
+```
+
+**数据类型**
+
+- constant
+  - number
+    - integer
+    - rational number
+    - real number
+    - complex number
+  - boolean
+  - character
+  - string
+
+**IO**
+
+current-input-port
+current-output-port
+open-input-file
+close-input-port
 
 ---
 
