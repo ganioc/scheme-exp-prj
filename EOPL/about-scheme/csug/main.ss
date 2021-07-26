@@ -2,8 +2,10 @@
 	(lib fibonacci)
 	(lib fibonacciex))
 
-;; (display "What's up?\n")
-;; (printf "~a~%" (fib 5))
+(display "What's up?\n")
+
+(printf "~a~%" (fib 5))
+
 
 (define main
   (lambda ()
@@ -21,3 +23,5 @@
   (lambda fns
     (initialize fns)
     (main)))
+
+(main)
