@@ -226,7 +226,7 @@ Chez Scheme does compile at the REPL, but in general I would not call it a JIT c
 (generate-wpo-files #t)
 (compile-program "./main.ss")
 ;; (compile-file "./your-program.ss")
-(compile-whole-program "./main.wpo" "./main.so")
+(compile-whole-program "./main.wpo" "./main")
 ;; 文件里包含 (import (chezscheme)) 即可，printf undefined error
 
 
@@ -234,7 +234,80 @@ Chez Scheme does compile at the REPL, but in general I would not call it a JIT c
 ```
 
 **How to Debug Scheme Programs?**
+先看一段简单的介绍。
+
+- test all cases, debugging
+- complete coverage, all test cases, obtaining coverage is difficult for large programs
+- How to debug chez scheme programs?
+- Chez Scheme error messages and what they might mean?
+  Gary T. Leavens
+
+**techniques for finding bugs**
+
+1. Basic technique
+   For 95% cases.
+   - Terminate with an error message
+   - Produce the wrong value
+   - print the wrong output
+   - Fail to terminate
+     1.1 Staring at the code
+     1.2 Simplifying the code and input
+     Isolating the portion of the code causing the error.
+     Printing messages,
+     1.3 Tracing,
+     Tracing packages.
+
+```scheme
+(+ 1 1)
+(trace buggy-remove null?)
+(untrace buggy-remove null?)
+(buggy-remove null?)
+(trace-define)
+(trace-lambda)
+(trace-let)
+(trace-case-lambda)
+(untrace) ;; ??
+(trace-define-syntax)
+(inspect/object)
+
+;; pretty-print
+(load "t1.ss" pretty-print)
+(load "t2.ss" (lambda (x) (pretty-print x) (eval x)))
+
+(compute-size)
+(compute-composition)
+
+
+```
+
+pretty-print
+
+block comment, #|, |#
+
+expression comment, #;
+
+2. Advanced Debugging Techniques
+   (debug), 进入 debug handler 进行调试
+   (break)
+   (inspect)
 
 ## Chap 2
 
 ## Chap 3
+
+## chap 4 Foreign Interface
+
+- subprocess
+- static or dynamic loading,
+
+(foregin-procedure )
+(foreign-callable)
+
+**engines**
+High level process abstraction supporting timed preemption. Engines may be used to simulate multiprocessing, implement operating system kernels, and perform nondeterministic computations.
+
+(make-engine)
+
+- ticks, amount of fuel to be given to the engine
+- complete, a procedure of one or more arguemnts, to do when finishes
+- expire, what to do if fuel runs out before computation finished
