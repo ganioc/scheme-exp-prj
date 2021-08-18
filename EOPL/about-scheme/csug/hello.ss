@@ -64,3 +64,43 @@
       (cons eng
 	    (eng 1 (lambda (t . v) '()) again)))))
 
+(define round-robin
+  (lambda (engs)
+    (if (null? engs)
+	'()
+	((car engs)
+	 1
+	 (lambda (ticks value)
+	   (cons value (round-robin (cdr engs))))
+	 (lambda (eng)
+	   (round-robin
+	    (append (cdr engs) (list eng))))))))
+(define first-true
+  (let ([pick
+	 (lambda (ls)
+	   (list-ref ls (random (length ls))))])
+    (lambda (engs)
+      (if (null? engs)
+	  #f
+	  (let ([eng (pick engs)])
+	    (eng 1
+		 (lambda (ticks value)
+		   (or value
+		       (first-true
+			(remq eng engs))))
+		 (lambda (new-eng)
+		   (first-true
+		    (cons new-eng
+			  (remq eng engs))))))))))
+
+(define-syntax por
+  (syntax-rules ()
+    [(_ x ...)
+     (first-true
+      (list (make-engine (lambda () x)) ...))]))
+
+(define engb
+  (make-engine
+   (lambda ()
+     (engine-block)
+     "completed")))
