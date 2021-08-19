@@ -38,3 +38,31 @@
   (lambda (los index)
     (cust-list-ref los index 0)
     ))
+
+(define cust-vector-index
+  (lambda (s vec index)
+    (if (= 0 (vector-length vec))
+	'()
+	(if (eq? s (vector-ref vec index))
+	    index
+	    (cust-vector-index s vec (+ 1 index))))
+    ))
+
+(define vector-index
+  (lambda (s vec)
+    (cust-vector-index s vec 0)
+    ))
+
+(define ribassoc
+  (lambda (s lst vec msg)
+    (let* ((index (list-index s lst)))
+      (if (= index -1)
+	  msg
+	  (let ((fb (vector-ref vec index)))
+	  (if (null? fb)
+	      msg
+	      fb)
+	  )))))
+
+
+
