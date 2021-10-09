@@ -64,5 +64,74 @@
 	      fb)
 	  )))))
 
+(define remove-first
+  (lambda (s los)
+    (if (null? los)
+	'()
+	(if (eq? (car los) s)
+	    (cdr los)
+	    (cons (car los) (remove-first s (cdr los)))))))
+
+(define remove
+  (lambda (s los)
+    (if (null? los)
+	'()
+	(if (eq? (car los) s)
+	    (remove s (cdr los))
+	    (cons (car los) (remove s (cdr los)))))))
+
+(define partial-vector-sum
+  (lambda (von n)
+    (if (zero? n)
+	0
+	(+ (vector-ref von (- n 1))
+	   (partial-vector-sum von (- n 1))))))
+
+(define vecotr-sum
+  (lambda (von)
+    (partial-vector-sum von (vector-length von))))
+
+;;> (down '(1 2 3))                                                            ;;   ((1) (2) (3))
+;;
+;;> (down '(a (more (compolicated)) object))                                   ;;   ((a) ((more (compolicated))) (object))
+;;
+(define down
+  (lambda (lst)
+    (if (null? lst)
+	'()
+	(cons (cons (car lst) '())
+	      (down (cdr lst))))))
 
 
+;;  (up '((x (y)) z))
+;;  (x (y) z)
+(define up
+  (trace-lambda up (lst)
+		(if (null? lst)
+		    '()
+		    (if (list? (car lst))
+			(append (car lst) (up (cdr lst) ))
+			(append (list (car lst)) (up (cdr lst)))
+			))))
+
+
+(define half
+  (trace-lambda half (x)
+		(cond
+		 [(zero? x) 0]
+		 [(odd? x) (half (- x 1))]
+		 [(even? x) (+ (half (- x 1)) 1)])))
+
+
+(define count-occurrences
+  (trace-lambda count-occurrences (s slst)
+		(if (null? slst)
+		    0
+		    (if (list? (car slst))
+			(+ (count-occurrences s (car slst))
+			   (count-occurrences s (cdr slst)))
+			(if (equal? s (car slst))
+			    (+ 1 (count-occurrences s (cdr slst)))
+			    (+ 0 (count-occurrences s (cdr slst))))
+			))
+		))
