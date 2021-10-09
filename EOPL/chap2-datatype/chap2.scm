@@ -133,5 +133,39 @@
 			(if (equal? s (car slst))
 			    (+ 1 (count-occurrences s (cdr slst)))
 			    (+ 0 (count-occurrences s (cdr slst))))
+			))))
+
+;; Exercise 2.2.8
+;; 4
+(define flatten
+  (trace-lambda flatten (slst)
+		(if (null? slst)
+		    '()
+		    (if (list? slst)
+			(if (list? (car slst))
+			    (append (flatten (car slst))
+				    (flatten (cdr slst)))
+			    (append (list (car slst))
+				    (flatten (cdr slst)))
+			    )
+			(list slst)
 			))
+		))
+
+;; Exercise 2.2.8
+;; 5
+(define merge
+  (trace-lambda merge (lon1 lon2)
+		(cond
+		 [(null? lon1) lon2]
+		 [(null? lon2) lon1]
+		 [(> (car lon1) (car lon2))
+		  (append (list (car lon2))
+			  (list (car lon1))
+			  (merge (cdr lon2) (cdr lon1)))]
+		 [else
+		  (append (list (car lon1))
+			  (list (car lon2))
+			  (merge (cdr lon1) (cdr lon2)))]
+		 )
 		))
