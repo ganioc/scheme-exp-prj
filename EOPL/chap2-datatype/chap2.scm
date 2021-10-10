@@ -169,3 +169,51 @@
 			  (merge (cdr lon1) (cdr lon2)))]
 		 )
 		))
+
+;; Exercise 2.2.9
+;; 1
+;; (define path-checker
+;;   (trace-lambda path-checker (n bst lst-container)
+;; 		(if (null? bst)
+;; 		    '()
+;; 		    (if (equal? n (car bst))
+;; 			lst-container
+			
+;; 			)
+;; 		    ;; if left not empty
+		    
+
+;; 		    ;; if right not empty
+
+;; 		    ;; retrun '()
+		    
+;; 		    )))
+;; (define path-helper
+;;   (trace-lambda path-helper (n bst lst-container)
+;; 		(if (null? bst)
+;; 		    '()
+;; 		    (begin
+;; 		      (printf "~a\n" (car bst))
+;; 		      (if (equal? n (car bst))
+;; 			  lst-container
+			  
+;; 			  )
+;; 		      (path-helper n (cadr bst) lst-container)
+;; 		      (path-helper n (caddr bst) lst-container)
+			
+;; 			))
+;; 		))
+;; binary search tree, 是按照大小分的，所以不需要全部检索
+;; 这个是我没有理解，无法做出来的原因。
+(define path
+  (trace-lambda path (n bst)
+		(if (null? bst)
+		    '()
+		    (let ([head (car bst)])
+		      (if (< n head)
+			  (cons 'L (path n (cadr bst)))
+			  (if (equal? n head)
+			      '()
+			      (cons 'R (path n (caddr bst)))))
+		      ))))
+
