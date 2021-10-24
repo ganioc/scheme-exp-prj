@@ -329,6 +329,53 @@
 		    'car
 		    (car&cdr2-helper s slst errvalue '()))
 		))
+
+;; 3.
+;; 这是一个凑出来的答案，实际上不是很优美。
+(define carcdr2
+  (trace-lambda carcdr2 (s slst errvalue)
+		
+		(letrec ((finder
+			  (trace-lambda finder (lst container)
+			    (cond
+			     [(null? lst) '()]
+			     [(not (list? (car lst)))
+			      (if (equal? s (car lst))
+				  (if (null? container)
+				      'car
+				      (list 'compose 'car  container) 
+				      )
+				  (finder (cdr lst)
+					  (if (null? container)
+					      (list 'compose 'cdr)
+					      (if (and (equal? 'compose (car container))
+						       (equal? 'cdr (cadr container))
+						       ) 
+						  (append container '(cdr))
+						  (list 'compose 'cdr container)
+					      )
+					  )))]
+			     [else
+			      (let ((found
+				     (finder (car lst)
+					     (list 'compose
+						   'car
+						   container))))
+				(if (not (null? found)) 
+				    found
+				    (finder (cdr lst)
+					    (list 
+						  'cdr
+						  container)))
+				)
+			      ]))))
+		  (let ((out (finder slst '()))) 
+		    (if (null? out)
+			errvalue
+			out))
+		  )
+		))
+
 ;; It's not perfectlly solved
 ;; I will leave it here for later studying ...
 
