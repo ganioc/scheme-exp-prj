@@ -216,4 +216,126 @@
 			      '()
 			      (cons 'R (path n (caddr bst)))))
 		      ))))
+;;					
+;; 这是一个很好的算法，来自网上
+;; github.com/rubenbarroso/EOPL/1.17
+(define path1
+  (trace-lambda path1 (n bst)
+		(letrec ((finder
+			  (lambda (tree the-path)
+			    (cond
+			     [(null? tree) '()]
+			     [(= (car tree) n) the-path]
+			     [else
+			      (let ((found-left
+				     (finder (cadr tree)
+					     (append the-path
+						     '(left)))))
+				(if (not (null? found-left))
+				    found-left
+				    (finder (caddr tree)
+					    (append the-path
+						    '(right)))))]))))
+		  (finder bst '()))))
 
+;; return the code to get s from slst
+;; otherwiser return errvalue
+(define car&cdr-helper
+  (trace-lambda car&cdr-helper (s slst errvalue container)
+		(if (null? slst)
+		    errvalue
+		    (if (equal? (car slst) s)
+			(list 'car container)
+			(if (list? (car slst))
+			    (car&cdr-helper s (car slst)
+					    errvalue
+					    (list 'car container))
+			    (car&cdr-helper s (cdr slst)
+					    errvalue
+					    (list 'cdr container))
+			    )
+			)		    
+		    )
+		))
+(define car&cdr
+  (trace-lambda car&cdr (s slst errvalue)
+		(list 'lambda (list 'lst)
+		      (car&cdr-helper s slst errvalue 'lst
+			      ))
+		))
+
+;; 这是一个完美的解答, 2021-10-24,
+;; 用到了letrec, 对遇到的每一个list,返回结果，letrec可以保存
+;; 中间值；最后再把结果美化后输出!
+(define carcdr
+  (trace-lambda carcdr (s slst errvalue)
+		(letrec ((finder
+			  (lambda (slst container)
+			    (cond
+			     [(null? slst) '()]
+			     [(not (list? (car slst)))
+			      (if (equal? s (car slst))
+				  (list 'car container)
+				  (finder (cdr slst)
+					  (list 'cdr container))
+
+				  )
+			      ]
+			     [else
+			      (let ((found
+				     (finder (car slst)
+					     (list 'car
+						   container))))
+				(if (not (null? found))
+				    found
+				    (finder (cdr slst)
+					    (list 'cdr
+						  container))))
+			      ]))))
+		  (let ((out (finder slst 'lst)))
+		    (if (null? out)
+			errvalue
+			(list 'lambda '(lst) out))
+		    )
+		  )
+		))
+
+;; (car&cdr 'a '(a b c) 'fail)
+;; >    (lambda (lst) (car lst))
+;; (car&cdr 'c '(a b c) 'fail)
+;; >    (lambda (lst) (car (cdr (cdr lst))))
+;;
+;; 我并没有完全的解决这种题型，从分叉中跳出还是没有实现
+;; 也许要在递归中使用continuation才行
+;; (car&cdr 'dog '(cat lion (fish dog) pig) 'fail)
+;; >    (lambda (lst) (car (cdr (car (cdr (cdr lst))))))
+
+(define car&cdr2-helper
+  (trace-lambda car&cdr2-helper (s slst errvalue container)
+		(if (null? slst)
+		    '()
+		    (if (equal? s (car slst))
+			(list 'compose 'car
+			      (cons 'compose container))
+			(car&cdr2-helper s (cdr slst)
+					 errvalue
+					 (cons 'cdr container))
+			)
+		    )
+		))
+(define car&cdr2
+  (trace-lambda car&cdr2 (s slst errvalue)
+		(if (equal? s (car slst))
+		    'car
+		    (car&cdr2-helper s slst errvalue '()))
+		))
+;; It's not perfectlly solved
+;; I will leave it here for later studying ...
+
+;; EOPL 2, Exercise 1.17, 
+;; 4
+;;
+(define compose
+  (lambda (p1 p2 ...)
+    1
+    ))

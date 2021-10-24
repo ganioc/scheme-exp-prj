@@ -9,3 +9,15 @@ Backus-Naur Form and Syntactic Derivations,
 BNF用来定义一些sets, which are called syntactic categoreies, nonterminals, <> surrounded.
 
 Kleene star {...}*
+
+## 常用的函数
+
+```
+append
+
+
+```
+
+Use little schemer?
+
+
