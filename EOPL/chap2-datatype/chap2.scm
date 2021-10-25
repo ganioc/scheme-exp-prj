@@ -406,7 +406,61 @@
       )
     ))
 
+;; 5
+(define filterin
+  (trace-lambda filterin (pred lst)
+		(cond
+		 [(null? lst) '()]
+		 [(pred (car lst))
+		  (cons (car lst) (filterin pred (cdr lst)))]
+		 [else
+		  (filterin pred (cdr lst))])))
+(define sort
+  (trace-lambda sort (lst)
+		(define less-than
+		  (lambda (n)
+		    (lambda (x)
+		      (< x n))))
+		(define greater-or-equal-than
+		  (lambda (n)
+		    (lambda (x)
+		      (>= x n))))
+		(if (null? lst)
+		    '()
+		    (append (sort (filterin (less-than (car lst))
+					    (cdr lst)))
+			    (list ( car lst))
+			    (sort (filterin (greater-or-equal-than (car lst))
+					    (cdr lst)))))
+		))
 
+;; 6
+(define sort
+  (trace-lambda sort (predicate lst)
+		(define less-than
+		  (lambda (n)
+		    (lambda (x)
+		      (predicate x n))))
+		(define greater-or-equal-than
+		  (lambda (n)
+		    (lambda (x)
+		      (not (predicate x n)))))
+		(letrec ((operate
+			  (lambda (lst)
+			    (if (null? lst)
+				'()
+				(append (operate (filterin (less-than (car lst))
+							   (cdr lst)))
+					(list (car lst))
+					(operate (filterin (greater-or-equal-than (car lst))
+							   (cdr lst))))
+				
+				)
+
+			    )))
+		  (operate lst)
+		  )
+		))
 
 
 
