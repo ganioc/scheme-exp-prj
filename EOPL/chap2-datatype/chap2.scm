@@ -333,8 +333,7 @@
 ;; 3.
 ;; 这是一个凑出来的答案，实际上不是很优美。
 (define carcdr2
-  (trace-lambda carcdr2 (s slst errvalue)
-		
+  (trace-lambda carcdr2 (s slst errvalue)		
 		(letrec ((finder
 			  (trace-lambda finder (lst container)
 			    (cond
@@ -382,7 +381,32 @@
 ;; EOPL 2, Exercise 1.17, 
 ;; 4
 ;;
+(define reverse
+  (trace-lambda reverse (lst)
+		(if (null? lst)
+		    '()
+		    (append (reverse (cdr lst)) (list ( car lst))))))
 (define compose
-  (lambda (p1 p2 ...)
-    1
+  (trace-lambda compose args 
+    (display (list? args))
+    (display #\newline)
+
+    (letrec ((operate (lambda (cmds arglst)
+			(if (null? cmds)
+			    arglst
+			    (operate (cdr cmds)
+				     ((car cmds) arglst)))
+			)))
+      (if (null? args)
+	  (lambda (x)
+	    x)
+	  (lambda (x)
+	  (operate (reverse args) x))
+	  )
+      )
     ))
+
+
+
+
+

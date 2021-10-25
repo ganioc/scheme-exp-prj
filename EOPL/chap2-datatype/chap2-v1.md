@@ -16,10 +16,22 @@ Kleene star {...}*
 append
 
 
+
+
 ```
 
 Use little schemer?
 10th amendment?
 
+### arbitray number of arguments
+怎么去实现呢？
+
+```
+(define (procedure . args)
+(lambda args ...)
+#\newline
+
+```
+(printf)
 
 
