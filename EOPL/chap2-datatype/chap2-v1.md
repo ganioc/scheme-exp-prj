@@ -97,5 +97,8 @@ lexical address of the variable reference.
 ```
 expression可以是一个symbol, 也可以是一个lambda表达式，或其它表达式。
 
+已经用depth-postion, 替代后，表达式（非formal parameters）中的值的名称就并不重要了。
+
+### 2.3.2 Renaming Variables
 
 

@@ -569,35 +569,35 @@
   (lambda (v declarations)
     (define helper
       (lambda (lst index)
-		(cond
-	 		[(null? lst) 'free]
-	 		[(eqv? (car lst) v) index]
-	 		[else
-	  			(helper (cdr lst) (+ index 1))]
+	(cond
+	 [(null? lst) 'free]
+	 [(eqv? (car lst) v) index]
+	 [else
+	  (helper (cdr lst) (+ index 1))]
 	 )))
     (helper declarations 0)))
 ;; 找到declarations所有的变量,
 (define filter-bound
   (lambda (declarations)
     (map (lambda (decl)
-	   		(make-lexical-address decl
-								 0
-				 				(index-of decl declarations)))
-		declarations)))
+	   (make-lexical-address decl
+				 0
+				 (index-of decl declarations)))
+	 declarations)))
 ;; 找到addresses中,不在declarations里面的那些变量,
 (define filter-free
   (lambda (declarations addresses)
     (define iter
       (lambda (lst)
-		(cond
-	 		[(null? lst) '()]
-	 		[(not (memq (get-v (car lst)) declarations))
-	  		 (cons (increment-depth (car lst))
-					(iter (cdr lst)))
-	  		]
-	 		[else
-	  			(iter (cdr lst))
-	  		]
+	(cond
+	 [(null? lst) '()]
+	 [(not (memq (get-v (car lst)) declarations))
+	  (cons (increment-depth (car lst))
+		(iter (cdr lst)))
+	  ]
+	 [else
+	  (iter (cdr lst))
+	  ]
 	 )))
     (iter addresses)))
 ;; 
@@ -633,9 +633,66 @@
   (lambda (exp)
     (lexical-address-helper exp '())
     ))
+;; (get-variable '(: 0 1) '((a : 1 0) (b : 0 1) (c : 1 1)))
+;; > b
+(define get-variable
+  (trace-lambda get-variable (exp addresses)
+    (cond
+     [(eqv? 'free (cadr exp))
+      (car exp)]
+     [(null? addresses)
+      #f]
+     [(and (eqv? (cadr exp)
+		 (get-d (car addresses)))
+	   (eqv? (caddr exp)
+		 (get-p (car addresses))))
+      (get-v (car addresses))]
+     [else
+      (get-variable exp (cdr addresses))])
+    ))
 
+(define reference?
+  (lambda (exp)
+    (eqv? ': (car exp))))
 
+;;
+(define un-lexical-address-helper
+  (trace-lambda un-lexical-address-helper (exp addresses)
+    (cond
+     [(reference? exp)
+      (get-variable exp addresses)]
+     [(eqv? (car exp) 'if)
+      (let ((condition
+	     (un-lexical-address-helper (cadr exp) addresses))
+	    (consequent
+	     (un-lexical-address-helper (caddr exp) addresses))
+	    (alternative
+	     (un-lexical-address-helper (cadddr exp) addresses)))
+	(if (or
+	     (not condition)
+	     (not consequent)
+	     (not alternative))
+	    #f
+	    (list 'if condition consequent alternative)))]
+     [(eqv? (car exp) 'lambda)
+      (let ((lambda-body
+	     (un-lexical-address-helper (caddr exp)
+					(cross-contour (cadr exp)
+						       addresses))))
+	(if (not lambda-body)
+	    #f
+	    (list 'lambda
+		  (cadr exp)
+		  lambda-body)))]
+     [else
+      (map (lambda (subexp)
+	     (un-lexical-address-helper subexp addresses))
+	   exp)]
+     )))
 
+(define un-lexical-address
+  (lambda (exp)
+    (un-lexical-address-helper exp '())))
 
 
 
