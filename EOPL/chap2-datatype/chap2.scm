@@ -464,3 +464,179 @@
 
 
 
+;; 2.3.1
+;; Page 57,
+;; 
+(define occurs-free?
+  (lambda (var exp)
+    (cond
+     [(symbol? exp) (eqv? var exp)]
+     [(eqv? (car exp) 'lambda)
+      (and (not (eqv? (caadr exp) var))
+	   (occurs-free? var (caddr exp)))]
+     [else (or (occurs-free? var (car exp))
+	       (occurs-free? var (cadr exp)))])))
+
+(define occurs-bound?
+  (lambda (var exp)
+    (cond
+     [(symbol? exp) #f]
+     [(eqv? (car exp) 'lambda)
+      (or (occurs-bound? var (caddr exp))
+	  (and (eqv? (caadr exp) var)
+	       (occurs-free? var (caddr exp))))]
+     [else (or (occurs-bound? var (car exp))
+	       (occurs-bound? var (cadr exp)))]
+     )))
+
+;; filter-in
+(define filter-in
+  (lambda (pred lst)
+    (cond
+     [(null? lst) '()]
+     [(pred (car lst))
+      (cons (car lst) (filter-in pred (cdr lst)))]
+     [else
+      (filter-in pred (cdr lst))])))
+;; 收集所有的变量
+(define extract-vars
+  (lambda (exp)
+    (define collector
+      (lambda (exp vars)
+	(cond
+	 [(symbol? exp)
+	  (if (not (memq exp vars))
+	      (cons exp vars))]
+	 [(eqv? (car exp) 'lambda)
+	  (collector (caddr exp) vars)]
+	 [else
+	  (append (collector (car exp) vars)
+		  (collector (cadr exp) vars))])))
+    (collector exp '())
+    ))
+
+(define free-vars
+  (lambda (exp)
+    (filter-in (lambda (var)
+		 (occurs-free? var exp))
+	       (extrac-vars exp))))
+
+(define bound-vars
+  (lambda (exp)
+    (filter-in (lambda (var)
+		 (occurs-bound? var exp))
+	       (extract-vars exp))))
+
+;; 2.3.10
+;;
+(define make-lexical-address
+  (lambda (v d p)
+    (list v ': d p)))
+;; (make-lexical-address 'a 1 0)                                                
+;; (a : 1 0)
+
+(define get-v
+  (lambda (address)
+    (car address)))
+(define get-d
+  (lambda (address)
+    (caddr address)))
+(define get-p
+  (lambda (address)
+    (cadddr address)))
+;; 增加 depth
+(define increment-depth
+  (lambda (address)
+    (make-lexical-address (get-v address)
+			  (+ 1 (get-d address))
+			  (get-p address))))
+
+;; 获取 exp 在 一个list中的address, 
+(define get-lexical-address
+  (lambda (exp addresses)
+    (define iter
+      (lambda (lst)
+		(cond 
+			[(null? lst) (list exp 'free)]
+	      	[(eqv? exp (get-v (car lst))) (car lst)]
+	      	[else
+	       		(get-lexical-address exp (cdr lst))])
+	))
+    (iter addresses)))
+
+;; 在list中查找v, 找到就返回调用cdr的次数;也就是在list中的位置
+(define index-of
+  (lambda (v declarations)
+    (define helper
+      (lambda (lst index)
+		(cond
+	 		[(null? lst) 'free]
+	 		[(eqv? (car lst) v) index]
+	 		[else
+	  			(helper (cdr lst) (+ index 1))]
+	 )))
+    (helper declarations 0)))
+;; 找到declarations所有的变量,
+(define filter-bound
+  (lambda (declarations)
+    (map (lambda (decl)
+	   		(make-lexical-address decl
+								 0
+				 				(index-of decl declarations)))
+		declarations)))
+;; 找到addresses中,不在declarations里面的那些变量,
+(define filter-free
+  (lambda (declarations addresses)
+    (define iter
+      (lambda (lst)
+		(cond
+	 		[(null? lst) '()]
+	 		[(not (memq (get-v (car lst)) declarations))
+	  		 (cons (increment-depth (car lst))
+					(iter (cdr lst)))
+	  		]
+	 		[else
+	  			(iter (cdr lst))
+	  		]
+	 )))
+    (iter addresses)))
+;; 
+(define cross-contour
+  (trace-lambda cross-contour (declarations addresses)
+    (let ((bound (filter-bound declarations))
+		  (free (filter-free declarations addresses)))
+      (append bound free))))
+;; 
+(define lexical-address-helper
+  (trace-lambda lexical-address-helper (exp addresses)
+		(cond
+    		 [(symbol? exp)
+      		(get-lexical-address exp addresses)]
+     		 [(eqv? (car exp) 'if)
+      		  (list 'if
+	    		(lexical-address-helper (cadr exp) addresses)
+	    		(lexical-address-helper (caddr exp) addresses)
+	    		(lexical-address-helper (cadddr exp) addresses))]
+     		 [(eqv? (car exp) 'lambda)
+      		  (list 'lambda
+			(cadr exp)
+			(lexical-address-helper (caddr exp)
+						(cross-contour (cadr exp)
+						   	       addresses)))]
+     		 [else
+      		  (map (lambda (subex)
+	     		 (lexical-address-helper subex addresses))
+		       exp)]
+		 )))
+
+(define lexical-address
+  (lambda (exp)
+    (lexical-address-helper exp '())
+    ))
+
+
+
+
+
+
+

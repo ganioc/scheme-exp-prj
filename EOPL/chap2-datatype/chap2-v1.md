@@ -1,4 +1,5 @@
 ## Induction Recursion and Scope
+参考代码: github.com/rubenbarroso/EOPL
 
 ### Inductive Specification
 
@@ -25,7 +26,7 @@ Use little schemer?
 
 ### arbitray number of arguments
 怎么去实现呢？
-
+不加括号，args, 就是输入为一个list
 ```
 (define (procedure . args)
 (lambda args ...)
@@ -33,5 +34,68 @@ Use little schemer?
 
 ```
 (printf)
+
+page 55,
+
+## 2.3 Static Properties of Variables
+### Free and Bound Variables
+lambda calculus,
+formal parameter
+
+A variable is to be occur bound: if the expression contains a bound reference to the variable.
+
+occur free: if the expression contains a free reference to the variable.
+
+在运行时，evaluate时，所有的variable references必须associated some values.
+
+lexically bound: bound to a formal parameter
+
+globally bound: bound at top level by definitions or be supplied by the system.
+
+combinator: Lambda expressions without free variables.
+
+Identity function:
+
+formal parameters
+
+operands
+
+扩展if expressions, 来定义occurs-free, occurs-bound
+
+### 2.3.2 Scope and Lexical Address
+region: declaration is effective
+
+scope, region
+
+block ,block structured,
+
+inner declaration supersedes the outer one,
+
+scope of a declaration,
+
+to which declaration a reference refers 
+
+borders of regions, contours, a number of contours may crossed before arriving at the associated declaration. lexical (static) depth of the variable references.
+
+lexical address of the variable reference.
+(v: d p)
+
+### Exercise 2.3.10
+这里的代码非常精巧，对源代码进行了分析和转换。
+
+```scheme
+(lexical-address '(lambda (a b c)                                              
+                      (if (eqv? b c)                                             
+                          ((lambda (c)                                           
+                             (cons a c))                                         
+                           a)                                                    
+                          b)))                                                   
+(lambda (a b c)                                                                  
+  (if ((eqv? free) (b : 0 1) (c : 0 2))                                          
+      ((lambda (c) ((cons free) (a : 1 0) (c : 0 0))) (a : 0 0))                 
+      (b : 0 1)))  
+```
+expression可以是一个symbol, 也可以是一个lambda表达式，或其它表达式。
+
 
 
