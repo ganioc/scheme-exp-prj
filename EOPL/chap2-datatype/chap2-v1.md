@@ -100,5 +100,31 @@ expression可以是一个symbol, 也可以是一个lambda表达式，或其它�
 已经用depth-postion, 替代后，表达式（非formal parameters）中的值的名称就并不重要了。
 
 ### 2.3.2 Renaming Variables
+a general program transformation rule. 规则，
+如果lambda expression的一个formal parameter改变了，所有的引用也改变了, 表达式的功能不变。新命名不能和original lambda expression里的free variable冲突。
+
+exp[y/x], exp with y for x,
+
+alpha-conversion, 这个被称为,
+
+rename. 
+
+There are 2 difficulties:
+- 如果在expression里面occurs-free, 则可以更改。
+- if an inner formal parameter declaration create a hole in the scope of the outer formal parameter: the references to the inner declaration should not be changed.
+
+Page 89
+
+先完成一个完全拷贝。接下来再加判断，替换。
+
+occurs-free:
+- E is a varaible reference and E is the same as x;
+- E is of the form (E1 E2) and x occurs free in E1 or E2;
+- E is of the form(lambda (y) E'), where y is differnent from x and x occurs free in E'
+
+occurs-bound:
+- E is of the form (E1 E2) and x occurs bound in E1 or E2
+- E is of the form (lambda (y) E'), where x occurs bound in E' or x and y are the same variable and y occurs free in E'
+
 
 
