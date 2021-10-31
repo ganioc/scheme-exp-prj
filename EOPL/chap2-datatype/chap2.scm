@@ -702,6 +702,7 @@
 ;; (rename '((lambda (x) x) x) 'y 'x)
 ;;    > ((lambda (x) x) y)
 ;; 还是有问题啊，对这个的理解还是不够深！看以后回来再解决这个问题吧。
+;; 
 (define rename
   (trace-lambda rename (exp replace origin)
 		(letrec
