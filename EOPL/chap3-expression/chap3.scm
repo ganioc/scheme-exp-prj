@@ -43,3 +43,38 @@
 		     )
 		    '())
 		))
+
+;; Exercise 3.3.1
+;;
+(define if->cond-helper
+  (trace-lambda if->cond-helper (slst)
+		(if (not (list? slst))
+		    (list (list 'else slst))
+		    (let ((name-op (car slst))
+			  (judge (cadr slst))
+			  (true-op (caddr slst))
+			  (false-op (cadddr slst)))
+		      (if (eq? name-op 'if)
+			  (cons (list judge true-op)
+				(if->cond-helper false-op))
+			  (list 'else false-op)
+			  )
+		      )
+		    )
+		))
+(define if->cond
+  (trace-lambda if->cond (slst)
+		(if (null? slst)
+		    '()
+		    (cons 'cond 
+			  (if->cond-helper slst)
+			  ))
+		))
+;; (if->cond '(if a b c))
+;;    > (cond [a b] [else c])
+;; (if->cond '(if a b (if c d (if e f g))))
+;;    > (cond [a b] [c d] [e f] [else g])
+;; (if->cond '(if a (if x b c) (if d e f)))
+;;    > (cond [a (if x b c)] [d e] [else f])
+
+
