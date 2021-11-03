@@ -57,7 +57,7 @@
 		      (if (eq? name-op 'if)
 			  (cons (list judge true-op)
 				(if->cond-helper false-op))
-			  (list 'else false-op)
+			  (list (list 'else false-op))
 			  )
 		      )
 		    )
@@ -76,5 +76,34 @@
 ;;    > (cond [a b] [c d] [e f] [else g])
 ;; (if->cond '(if a (if x b c) (if d e f)))
 ;;    > (cond [a (if x b c)] [d e] [else f])
+
+(define cond->if-helper
+  (trace-lambda cond->if-helper (slst)
+		(if (null? slst)
+		    '()
+		    (let ((cur-op (car slst))
+			  (next-op (cdr slst)))
+		      (if (and (symbol? (car cur-op) )
+			       (eqv? (car cur-op) 'else ))
+			  (cadr cur-op)
+			  (list 
+			   'if 
+			   (car cur-op)
+			   (cadr cur-op)
+			  
+			   (cond->if-helper next-op)
+			   )
+			  )
+		      )
+		    )
+		))
+(define cond->if
+  (trace-lambda cond->if (slst)
+		(if (null? slst)
+		    '()
+		    (cond->if-helper (cdr slst) ))
+		))
+;; (cond->if '(cond (a b) (c d) (else e)))
+;;    > (if a b (if c d e))
 
 
