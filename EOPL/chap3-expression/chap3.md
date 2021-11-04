@@ -69,6 +69,51 @@ binary trees:
 interior-symbol  // 这里没有使用->符号
 
 ### Variant Records and variant-case
+包含两个或更多的alternative类型的类型，叫做union类型，联合类型
+
+所有的alternatives是records, 这样的union类型叫做variant record类型。可变记录, variant record类型。
+
+variant-case
+
+field-list
+
+record-expression,
+
+#### No variant-case
+没有发现chez scheme的variant-case
+Parser, concrete syntax, abstract syntax,
+
+AST, abstract syntax tree, lambda formal, body,
+rator, rand
+
+Erik Hilsdale, 
+
+variant-case, to unparse expressions. 
+
+### 华盛顿大学, rhyspj, spring10cs145/ 课程
+CS 145-10, Programming Languages,
+- https://www2.seas.gwu.edu/~rhyspj/cs3221/cs3221.html
+- SICP
+- How to Design Programs
+- The Implementation of Functional Programming Languages (Simon Peyton Jones)
+- partial evaluation book,
+
+CS 133-10, Algorithms and Data Structures, 
+- Duane Bailey's Java Structures
+
+P105
+
+# Appendix A Record Implementation
+抄一个define-record, 和variant-case到这里。
+
+
+
+
+
+
+
+
+
 
 
 

@@ -154,3 +154,8 @@
      (error "leaf-sum-2: Invalid tree"
 	    tree)))))
 
+
+
+(define leaf-sum-3
+  (lambda (tree)
+    ()))
