@@ -90,7 +90,6 @@
 			   'if 
 			   (car cur-op)
 			   (cadr cur-op)
-			  
 			   (cond->if-helper next-op)
 			   )
 			  )
@@ -106,4 +105,52 @@
 ;; (cond->if '(cond (a b) (c d) (else e)))
 ;;    > (if a b (if c d e))
 
+;; Exercise 3.3.2
+;; case
+
+
+(define-record interior (symbol left-tree right-tree))
+
+(define tree-1 (make-interior 'foo
+			      (make-interior 'bar
+					     1
+					     2)
+			      3))
+
+(define leaf-sum
+  (trace-lambda leaf-sum (tree)
+		(cond
+		 ((number? tree) tree)
+		 ((interior? tree)
+		  (+ (leaf-sum
+		      (interior-left-tree tree))
+		     (leaf-sum
+		      (interior-right-tree tree))))
+		 (else
+		  (error "leaf-sum: Invalid tree"
+			 tree))
+		 )))
+
+(define-record leaf (number))
+
+(define tree-2
+  (make-interior 'foo
+		 (make-interior 'bar
+				(make-leaf 1)
+				(make-leaf 2))
+		 (make-leaf 3)))
+
+(define leaf-sum-2
+  (trace-lambda
+   leaf-sum-2 (tree)
+   (cond
+    ((leaf? tree) (leaf-number tree))
+    ((interior? tree)
+     (+ (leaf-sum-2
+	 (interior-left-tree tree))
+	(leaf-sum-2
+	 (interior-right-tree tree))))
+    (else
+     (error "leaf-sum-2: Invalid tree"
+	    tree)))))
 

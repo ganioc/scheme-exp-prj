@@ -31,5 +31,49 @@ conjunction of expressions, connective ,  and
 logical disjunction, connective,  or, 
 
 Exercise 3.3.1
+
+```
+if->cond
+
+name-op
+judge
+true-op
+false-op
+
+
+```
 ## branching
+
+Exercise 3.3.2
+
+```
+case
+
+```
+variant-case?
+
+## Records
+Implemented with a syntactic extension facility.
+See Appendix A for details.
+
+define-record
+
+make-name, takes n arguments, and returns a new record of the given type with field.
+
+name->filedi, for 1<=1 <=n; 
+
+binary trees:
+
+<tree>::= <number> | (<symbol> <tree> <tree>)
+
+interior-symbol  // 这里没有使用->符号
+
+### Variant Records and variant-case
+
+
+
+
+
+
+
 
