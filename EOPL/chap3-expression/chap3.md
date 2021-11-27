@@ -105,7 +105,35 @@ P105
 
 # Appendix A Record Implementation
 抄一个define-record, 和variant-case到这里。
+需要把这几个函数给搞清楚才能够往下走
+尽在appendix.scm这个文件里面,
 
+P486,
+
+To support records, 使用了some syntactic extension, macro facility, 并且using extend-syntax. See Dybvig Kent 1987, for details of this ##extend-syntax## mechanism.
+
+```
+// record-proc-name ( name fields)
+// name to string,
+// 得到一个 symbol, make-name, name?, 每一个field都会生成name->field
+
+// record-indicate (vec-len)
+// 得到 (1 2 3 4 ... )直到len-1
+
+// make-unique-name (names)
+// 将names list里的所有symbol转换为string, 然后拼在一起，再转换成symbol
+
+```
+## extend-syntax
+什么是extend-syntax, variant-case呢？
+
+
+## extensions to syntax-case syntactic
+
+### fluid-let-syntax
+
+
+### syntax-rules
 
 
 

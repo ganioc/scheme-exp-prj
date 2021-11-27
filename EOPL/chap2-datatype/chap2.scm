@@ -11,8 +11,9 @@
     (if (null? lst)
 	'()
 	(let ([a (car lst)])
-	  (cons  (cons (car (cdr a))  (car a) ) 
+	  (cons (cons (car (cdr a))  (car a) ) 
 		(invert (cdr lst)))))))
+
 (define cust-list-index
   (lambda (s los n)
     (if (null? los)
