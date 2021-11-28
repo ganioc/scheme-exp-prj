@@ -107,6 +107,11 @@ P105
 <tree> ::= <number>|(<symbol> <tree> <tree>)
 ```
 
+### variant record type
+a union type all of whose alternatives are records. 
+
+
+
 # Appendix A Record Implementation
 抄一个define-record, 和variant-case到这里。
 需要把这几个函数给搞清楚才能够往下走
