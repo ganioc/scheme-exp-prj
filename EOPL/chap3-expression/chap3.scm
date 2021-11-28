@@ -108,6 +108,7 @@
 ;; Exercise 3.3.2
 ;; case
 
+(load "./appendix.scm")
 
 (define-record interior (symbol left-tree right-tree))
 
@@ -123,9 +124,9 @@
 		 ((number? tree) tree)
 		 ((interior? tree)
 		  (+ (leaf-sum
-		      (interior-left-tree tree))
+		      (interior->left-tree tree))
 		     (leaf-sum
-		      (interior-right-tree tree))))
+		      (interior->right-tree tree))))
 		 (else
 		  (error "leaf-sum: Invalid tree"
 			 tree))
@@ -136,7 +137,7 @@
 (define tree-2
   (make-interior 'foo
 		 (make-interior 'bar
-				(make-leaf 1)
+				(make-leaf 4)
 				(make-leaf 2))
 		 (make-leaf 3)))
 
@@ -144,20 +145,30 @@
   (trace-lambda
    leaf-sum-2 (tree)
    (cond
-    ((leaf? tree) (leaf-number tree))
+    ((leaf? tree) (leaf->number tree))
     ((interior? tree)
      (+ (leaf-sum-2
-	 (interior-left-tree tree))
+	 (interior->left-tree tree))
 	(leaf-sum-2
-	 (interior-right-tree tree))))
+	 (interior->right-tree tree))))
     (else
      (error "leaf-sum-2: Invalid tree"
 	    tree)))))
 
+;; use variant-case
+(define leaf-sum-vari
+  (trace-lambda
+   leaf-sum-vari (tree)
+   (variant-case tree
+		 (leaf (number) number)
+		 (interior (left-tree right-tree)
+			   (+ (leaf-sum-vari left-tree)
+			      (leaf-sum-vari right-tree)))
+		 (else
+		  (error "leaf-sum-vari: Invalid tree"
+			 tree)))))
 
 
-(define leaf-sum-3
-  (lambda (tree)
-    ()))
+
 
 
