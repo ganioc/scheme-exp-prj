@@ -56,3 +56,59 @@
     (lambda (x)
       (f ((n f) x)))))
 
+(define enumerate-interval
+  (trace-lambda
+   enumerate-interval (low high)
+   (if (> low high)
+       '()
+       (cons low
+	     (enumerate-interval (+ low 1) high)))
+		))
+
+(define enumerate-tree
+  (trace-lambda
+   enumerate-tree (tree)
+   (cond ((null? tree) '())
+	 ((not (pair? tree)) (list tree))
+	 (else
+	  (append (enumerate-tree (car tree))
+		  (enumerate-tree (cdr tree))))
+	 )
+   ))
+
+(define accumulate
+  (trace-lambda accumulate (op initial sequence)
+    (if (null? sequence)
+	initial
+	(op (car sequence)
+	    (accumulate op initial (cdr sequence))))))
+(define fold-right accumulate)
+(define fold-left
+  (lambda (op initial sequence)
+    (define iter
+      (lambda (result rest)
+	(if (null? rest)
+	    result
+	    (iter (op result (car rest))
+		  (cdr rest))))
+      )
+    (iter initial sequence)))
+
+(define horner-eval
+  (trace-lambda horner-eval (x coefficient-sequence)
+    (accumulate
+     (lambda (this-coeff higher-terms)
+       (+ this-coeff (* higher-terms x)))
+     0
+     coefficient-sequence)))
+
+(define reverse-2
+  (trace-lambda
+   reverse-2 (sequence)
+   (fold-right
+    (lambda (x y)
+      (append y  (list x) ))
+    '()
+    sequence
+    )))
+
