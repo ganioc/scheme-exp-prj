@@ -294,7 +294,8 @@ fluid-let-syntax
 
 ```
 
-
+## Variant Records, variant-case,
+Branching on the type of the record. 
 
 
 

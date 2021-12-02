@@ -11,6 +11,27 @@ page 94,
 
 as modular, modular structure, Modular construction,
 
+## patterns of combining
+frame
+    - origin vector
+    - edge 1 vector
+    - edge 2 vector
+
+Shift and scale images to fit the frame. 将unit square转换为一个frame mapping the vector v=(x,y) to the vector sum:
+
+## 2.3 Symbolic Data
+Using arbitrary symbols as data, 
+
+eq?
+memq?
+
+symbolic differentiation, 字符微分, powerful systems for symbolic mathematical work, applied mathematicians and physicists.
+
+### Representing Sets
+表示集合, set, 
+
+
+
 
 
 

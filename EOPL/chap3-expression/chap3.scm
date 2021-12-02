@@ -168,6 +168,90 @@
 		  (error "leaf-sum-vari: Invalid tree"
 			 tree)))))
 
+;; use leaf-sum
+(define leaf-sum-vari-2
+  (trace-lambda
+   leaf-sum-vari-2
+   (tree)
+   (let ((*record* tree))
+     (cond
+      ((leaf? *record*)
+       (let ((number (leaf->number *record*)))
+	 number))
+      ((interior? *record*)
+       (let ((left-tree (interior->left-tree *record*))
+	     (right-tree (interior->right-tree *record*)))
+	 (+ (leaf-sum-vari-2 left-tree)
+	    (leaf-sum-vari-2  right-tree))))
+      (else
+       (error "leaf-sum-vari-2: Invalid tree" tree))))))
+
+
+;; Exercise 3.4.3
+;; max-interior,
+(define tree-a (make-interior 'a (make-leaf 2)
+			      (make-leaf 3)))
+(define tree-b (make-interior 'b (make-leaf -1)
+			      tree-a))
+(define tree-c (make-interior 'c tree-b
+			      (make-leaf 1)))
+
+(define max-interior-helper
+  (trace-lambda
+   max-interior
+   (tree)
+   (cond
+    ((leaf? tree)
+     (let ((number (leaf->number tree)))
+       number
+       ))
+    ((interior? tree)
+     (let ((left-max (max-interior-helper
+		      (interior->left-tree tree)))
+	   (right-max (max-interior-helper
+		       (interior->right-tree tree))))
+       (if (> left-max right-max)
+	   left-max
+	   right-max)))
+    (else
+     (error "max-interior-helper: Invalid tree" tree))
+    )))
+
+(define-record tree-value (symbol value))
+
+(define max-value
+  (trace-lambda
+   max-value
+   (tree symbol)
+   (cond
+    ((leaf? tree)
+     (let ((number (leaf->number tree)))
+       (make-tree-value symbol number))
+     )
+    ((interior? tree)
+     (let ((left-max (max-value (interior->left-tree tree)
+				(interior->symbol tree)))
+	   (right-max (max-value (interior->right-tree tree)
+				 (interior->symbol tree))))
+       (if (> (tree-value->value left-max)
+	      (tree-value->value right-max))
+	   left-max
+	   right-max)
+       ))
+    (else
+     (error "max-value : Invalid tree" tree))
+    )))
+
+(define max-interior
+  (lambda (tree)
+
+    (tree-value->symbol
+     (max-value tree (interior->symbol tree))
+     )))
+
+
+
+
 
 
 
