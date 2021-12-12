@@ -297,7 +297,97 @@ fluid-let-syntax
 ## Variant Records, variant-case,
 Branching on the type of the record. 
 
+## Abstract Syntax and its Representation Using Records
+interpreters or compilers, are usually syntax directed. grammer rules.
+subparts , nonterminals, 
 
+```scheme
+<exp>::= (lambda(<var>)<exp>)
+
+<exp> ::= <number>
+        | <varref>
+        | (lambda (<var>)<exp>)
+        | (<exp> <exp>)
+lit (datum)
+varref(variable reference)
+lambda(formal body)
+app(application, operator , operand)
+```
+abstract syntax: 标示 syntactic component的语法规则, 作为一个子部件;
+concrete syntax: designed for human consumption;
+
+nonterminal occurrence names, 
+
+一个表达式的抽象语法表达形式，通常就是一个ast, abstract syntax tree,
+expression -> AST
+
+node -> 对应syntactic derivation of the expression, a step
+
+edge -> labeled with the name of the corresponding nonterminal occurrence,
+
+leaves -> terminal strings, (parentheses, 不携带任何意义，通常在语法树中被省略)
+
+在程序中，抽象语法，的最佳表示方法是variant records. record type与每个production name 相关联。fields named after 相关的nonterminal occurrences. For lambda calculus with numbers ,使用record definitions.
+
+一个程序是由字符串组成的。找出它的抽象语法树，是一个复杂的过程。这个过程就叫做parsing. 这个过程与我们拿抽象语法树来做什么无关。parsing.
+
+parsing program叫做parser, 
+
+## Kleene start , Kleene plus,
+```
+<exp>::= <number>    ;; lit (datum)
+    | <varref>       ;; varref (var)
+    | (if <exp> <exp> <exp>)     ;; if (test-exp then-exp else-exp)
+    | (lambda ({<var>}*) <exp>)  ;; lambda (formals body)
+    | (<exp> {<exp>}*)           ;; app (rator rands)
+```
+
+## 3.4.4 An Implementation of Records
+
+## Data Abstraction
+数据的抽象。底层的实现是有效率的, 改变数据的表示形式，比如表，链表，平衡二叉树。
+数据抽象的目的是为了隐藏底下的实现细节。
+
+ADT, abstract data type; 访问数据只能够通过ADT提供的方法, 程序的其它部分与数据的表示方法是无关的。表示形式无关化, representation independence.
+
+vector的表现形式是连续的内存，可以频繁读写,;list在空间中是离散的。
+
+- opaque, 
+- transparent, 
+
+原始数据为opaque的，如: procedure, number, pair, vector, character, symbol, string, boolean, empty list,
+
+Lists是一个派生的类型，consisting of pairs and a empty list.
+
+empty list, null?, 
+
+如果将define-record, 由vecotr转为lists, leaf-sum这些以前的函数不需要改变。这就是抽象的强大威力，改变底层，而上层无需改变。
+
+### 从Procedural Structure to Data Structure表示
+#### Procedural Representation
+finite functions,
+
+finite set of symbols. 
+
+- environment, 
+    associates variables with their values in a programming language implementation
+- symbol table,
+    associate variables with lexical address information at compile time
+
+FF, finite function, ADT, 3个procedures:
+- create-empty-ff,
+- extend-ff, 
+    takes a symbol, sym, value, val, a finitie function ff, 返回一个新的ff, associate sym with val, 
+- apply-ff,
+    take a ff, and a symbol, 返回一个value,与symbol相关联, 实际上是查找变量的值
+
+#### Ribcage environment structure
+
+
+
+
+
+#### Record Representation
 
 
 

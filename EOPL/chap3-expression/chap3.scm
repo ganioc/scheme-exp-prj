@@ -249,6 +249,120 @@
      (max-value tree (interior->symbol tree))
      )))
 
+;; Exercise 3.4.3
+;;
+(define-record lit (datum))
+(define-record varref (var))
+(define-record lambda (formal body))
+(define-record app (rator rand))
+
+(define parse
+  (lambda (datum)
+    (cond
+     ((number? datum) (make-lit datum))
+     ((symbol? datum) (make-varref datum))
+     ((pair? datum)
+      (if (eq? (car datum) 'lambda)
+	  (make-lambda (caadr datum)
+		       (parse (caddr datum)))
+	  (make-app (parse (car datum))
+		    (parse (cadr datum)))))
+     (else
+      (error "parse: Invalid concrete syntax" datum)))))
+
+(define unparse
+  (lambda (exp)
+    (variant-case
+     exp
+     (lit (datum) datum)
+     (varref (var) var)
+     (lambda (formal body)
+       (list 'lambda (list formal)
+	     (unparse body)))
+     (app (rator rand) (list (unparse rator)
+			     (unparse rand)))
+     (else
+      (error "unparse: Invalid abstract syntax" exp)))))
+
+(define free-vars
+  (lambda (exp)
+    (variant-case
+     exp
+     (lit (datum) '())
+     (varref (var) (list var))
+     (lambda (formal body)
+       (remove formal (free-vars body)))
+     (app (rator rand)
+	  (union (free-vars rator)
+		 (free-vars rand))))))
+;; Finite Function, FF
+;;
+(define create-empty-ff
+  (lambda ()
+    (lambda (symbol)
+      (error "empty-ff: no association for symbol" symbol))))
+
+(define extend-ff
+  (lambda (sym val ff)
+    (lambda (symbol)
+      (if (eq? symbol sym)
+	  val
+	  (apply-ff ff symbol)))))
+
+(define apply-ff
+  (lambda (ff symbol)
+    (ff symbol)))
+
+
+;; Data Representation
+(define-record empty-ff ())
+(define-record extended-ff (symbol val ff))
+
+(define create-empty-ff-d
+  (lambda ()
+    (make-empty-ff)))
+
+(define extend-ff-d
+  (lambda (sym val ff)
+    (make-extended-ff sym val ff)))
+
+(define apply-ff-d
+  (lambda (ff symbol)
+    (variant-case
+     ff
+     (empty-ff ()
+	       (error "empty-ff: no assocation to symbol" symbol))
+     (extended-ff (sym val ff)
+		  (if (eq? symbol sym)
+		      val
+		      (apply-ff-d ff symbol)))
+     (else
+      (error "apply-ff: Invalid finite function" ff)))))
+
+(define create-empty-ff make-empty-ff)
+(define extend-ff make-extended-ff)
+
+(define dxy-ff
+  (extend-ff
+   'd 6
+   (extend-ff
+    'x 7
+    (extend-ff
+     'y 8
+     (create-empty-ff)))))
+
+(define extend-ff*
+  (lambda (sym-list val-list ff)
+    (if (null? sym-list)
+	ff
+	(extend-ff (car sym-list) (car val-list)
+		   (extend-ff* (cdr sym-list)
+			       (cdr val-list)
+			       ff)))))
+
+
+
+
 
 
 

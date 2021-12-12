@@ -29,6 +29,11 @@ symbolic differentiation, 字符微分, powerful systems for symbolic mathematic
 
 ### Representing Sets
 表示集合, set, 
+* unordered list,
+* ordered lists, 这个会加快搜索速度, 
+
+### Sets as binary trees
+
 
 
 
