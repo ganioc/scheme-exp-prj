@@ -125,8 +125,8 @@
 	       (let ((right-tree (car right-result))
 		     (remaining-elts (cdr right-result)))
 		 (cons (make-tree this-entry
-				 left-tree
-				 right-tree)
+				  left-tree
+				  right-tree)
 		       remaining-elts)))))))))
 
 

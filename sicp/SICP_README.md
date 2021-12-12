@@ -33,7 +33,9 @@ symbolic differentiation, 字符微分, powerful systems for symbolic mathematic
 * ordered lists, 这个会加快搜索速度, 
 
 ### Sets as binary trees
+Balanced tree. 
 
+(quotient) 求商,
 
 
 
