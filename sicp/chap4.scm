@@ -209,21 +209,20 @@
 (define sample-message '(0 1 1 0 0 1 0 1 0 1 1 1 0))
 
 (define (encode-symbol symbol tree)
+  (define (hit-leaf branch)
+    (and (eq? 2 (car branch))
+	 (null? (cdr branch))))
   (define (check-node node)
     (let ((left (check (left-branch node))))
       (if (not (null? left))
-	  (if (and (eq? 2 (car left))
-		   (null? (cdr left)))
+	  (if (hit-leaf left)
 	      '(0)
-	      (append '(0) left)	      
-	      )
+	      (append '(0) left))
 	  (let ((right (check (right-branch node))))
 	    (if (not (null? right))
-		(if (and (eq? 2 (car right))
-			 (null? (cdr right)))
+		(if (hit-leaf right)
 		    '(1)
-		    (append '(1) right)
-		    )
+		    (append '(1) right))
 		'())))))
   (define (check node)
     (if (leaf? node)
@@ -239,5 +238,9 @@
       (append (encode-symbol (car message) tree)
 	      (encode (cdr message) tree))))
 
-
+;; Exercise 2.69
+;;
+(define (generate-huffman-tree pairs)
+  (display 'he)
+  )
 
