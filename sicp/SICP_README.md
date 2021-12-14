@@ -37,6 +37,10 @@ Balanced tree.
 
 (quotient) 求商,
 
+**generic procedures**
+procedure可以处理多种类型的数据的，
+用一个函数，命令处理所有的类型数据，包括已知数据类型，也包括未知的将来的数据类型，这个就是模版，所要求解决的问题。
+
 
 
 
