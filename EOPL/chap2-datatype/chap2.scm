@@ -520,7 +520,7 @@
   (lambda (exp)
     (filter-in (lambda (var)
 		 (occurs-free? var exp))
-	       (extrac-vars exp))))
+	       (extract-vars exp))))
 
 (define bound-vars
   (lambda (exp)
@@ -554,14 +554,14 @@
 
 ;; 获取 exp 在 一个list中的address, 
 (define get-lexical-address
-  (lambda (exp addresses)
+  (trace-lambda get-lexical-address (exp addresses)
     (define iter
       (lambda (lst)
-		(cond 
-			[(null? lst) (list exp 'free)]
-	      	[(eqv? exp (get-v (car lst))) (car lst)]
-	      	[else
-	       		(get-lexical-address exp (cdr lst))])
+	(cond 
+	 [(null? lst) (list exp ': 'free)]
+	 [(eqv? exp (get-v (car lst))) (car lst)]
+	 [else
+	  (get-lexical-address exp (cdr lst))])
 	))
     (iter addresses)))
 
@@ -594,25 +594,23 @@
 	 [(null? lst) '()]
 	 [(not (memq (get-v (car lst)) declarations))
 	  (cons (increment-depth (car lst))
-		(iter (cdr lst)))
-	  ]
+		(iter (cdr lst)))]
 	 [else
-	  (iter (cdr lst))
-	  ]
+	  (iter (cdr lst))]
 	 )))
     (iter addresses)))
 ;; 
 (define cross-contour
   (trace-lambda cross-contour (declarations addresses)
-    (let ((bound (filter-bound declarations))
-		  (free (filter-free declarations addresses)))
-      (append bound free))))
+		(let ((bound (filter-bound declarations))
+		      (free (filter-free declarations addresses)))
+		  (append bound free))))
 ;; 
 (define lexical-address-helper
   (trace-lambda lexical-address-helper (exp addresses)
 		(cond
     		 [(symbol? exp)
-      		(get-lexical-address exp addresses)]
+      		  (get-lexical-address exp addresses)]
      		 [(eqv? (car exp) 'if)
       		  (list 'if
 	    		(lexical-address-helper (cadr exp) addresses)

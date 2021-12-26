@@ -11,6 +11,29 @@ BNF用来定义一些sets, which are called syntactic categoreies, nonterminals,
 
 Kleene star {...}*
 
+$$
+\begin{align*}
+<list-of-numbers> &= ()|(<number> . <list-of-numbers>) \\
+<list-of-numbers> &= ({<number>}^*) \\
+<list>&=({<datum>}^*) \\
+<dotted-datum> &= ({<datum>}^+ . <datum>) \\
+<vector> &= \#({<datum>}^*) \\
+<datum> &= <number>|<symbol>|<boolean>|<string> \\ 
+
+\end{align*}
+\\
+\begin{aligned}
+|<list>|<dotted-datum>|<vector>
+\end{aligned}
+$$
+
+tree的定义:
+$$
+\begin{aligned}
+<bin-search-tree>::=()|(<key><bin-search-tree><bin-search-tree>)
+\end{aligned}
+$$
+
 ## 常用的函数
 
 ```
@@ -38,19 +61,26 @@ Use little schemer?
 page 55,
 
 ## 2.3 Static Properties of Variables
+$$
+\begin{align*}
+<exp>::=<varref> \\
+| (lambda(<var>)<exp>) \\
+| (<exp> <exp>)
+\end{align*}
+$$
 ### Free and Bound Variables
 lambda calculus,
 formal parameter
 
-A variable is to be occur bound: if the expression contains a bound reference to the variable.
+A variable is to be **occur bound**: if the expression contains a bound reference to the variable (in the formals).
 
 occur free: if the expression contains a free reference to the variable.
 
 在运行时，evaluate时，所有的variable references必须associated some values.
 
-lexically bound: bound to a formal parameter
+**lexically bound**: bound to a formal parameter
 
-globally bound: bound at top level by definitions or be supplied by the system.
+**globally bound**: bound at top level by definitions or be supplied by the system.
 
 combinator: Lambda expressions without free variables.
 
@@ -58,14 +88,28 @@ Identity function:
 
 formal parameters
 
+定义1:
+变量x occurs free in expression E , if and only if 
+- E is the same as x, E is a variable also
+- E is of the form (E1 E2), x occurs free in E1 or E2
+- E is of the form (lambda (y) E'), y is different from x and x occurs free in E'
+
+定义2: 变量x occurs bound in expression E, if and only if
+- E is the form (E1 E2), and x occurs bound in E1 or E2
+- E is of the form (lambda (y) E'), x occurs bound in E' or x and y are the same variable and y occurs free in E'
+
+
 operands
 
 扩展if expressions, 来定义occurs-free, occurs-bound
 
 ### 2.3.2 Scope and Lexical Address
 region: declaration is effective
+  - formal的region是body
+  - top-level的定义是整个程序
+  - Declaration has a limited scope,   
 
-scope, region
+scope, region, 
 
 block ,block structured,
 
@@ -75,10 +119,13 @@ scope of a declaration,
 
 to which declaration a reference refers 
 
-borders of regions, contours, a number of contours may crossed before arriving at the associated declaration. lexical (static) depth of the variable references.
+**borders of regions**, contours, a number of contours may crossed before arriving at the associated declaration. lexical (static) depth of the variable references. 语法深度, lexical depth.
 
 lexical address of the variable reference.
-(v: d p)
+$(v: d p)$, lexical depth, declaration position, 这种表示方式确实是很方便。变量名叫什么？反而无关紧要了。They're not absolutely necessary in writing program.
+
+
+
 
 ### Exercise 2.3.10
 这里的代码非常精巧，对源代码进行了分析和转换。

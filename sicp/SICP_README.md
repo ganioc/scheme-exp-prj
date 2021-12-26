@@ -41,12 +41,28 @@ Balanced tree.
 procedure可以处理多种类型的数据的，
 用一个函数，命令处理所有的类型数据，包括已知数据类型，也包括未知的将来的数据类型，这个就是模版，所要求解决的问题。
 
+给出一个字母表的符号，和它们的相对出现频率，construct the best code.
+With the fewest bits? 
 
+> (decode sample-message sample-tree)                            
+    (A D A B B C A)
 
+> (encode '(A D A) sample-tree) 
+    (0 1 1 0 0) 
 
+需要编写Successive-merge来生成huffman-tree, not that complicated.
+输入的pair是'((A 4) (B 2) (C 1) (D 1))
 
+> (make-leaf-set sample-pairs) 
+((leaf D 1) (leaf C 1) (leaf B 2) (leaf A 4))
 
+如何来写呢？
 
-
-
+```scheme
+(make-code-tree (make-leaf 'A 4)
+    (make-code-tree (make-leaf 'B 2)
+        (make-code-tree
+        (make-leaf 'D 1) 
+         (make-leaf 'C 1))))
+```
 

@@ -239,8 +239,48 @@
 	      (encode (cdr message) tree))))
 
 ;; Exercise 2.69
-;;
+;; pairs as '((A 4) (B 2) (C 1) (D 1))
+;; weight-leaf ,
+;; 两种类型: code-tree, leaf
+;; 找到中间的两个最小的，将它们合并成一个code-tree, 并将两者移除
+;; 如果只剩下一个成员，则算法结束
+(define (weight-code-tree code-tree) (cadddr code-tree))
+(define (weight-get item)
+  (if (leaf? item)
+      (weight-leaf item)
+      (weight-code-tree item)))
+(define adjoin-helper
+  (trace-lambda
+   adjoin-helper
+   (x set)
+   (cond ((null? set) (list x))
+	 ((< (weight-get x) (weight-get (car set)))
+	  (cons x set))
+	 (else (cons (car set)
+		     (adjoin-helper x (cdr set)))))))
+(define sort-lst
+  (trace-lambda
+   sort-lst
+   (lst)
+   (if (null? lst)
+       '()
+       (let ((pair (car lst)))
+	 (adjoin-helper (car lst)
+			(sort-lst (cdr lst)))))))
+(define successive-merge
+  (trace-lambda
+   successive-merge
+   (lst)
+   (if (= (length lst) 1)
+       (car lst)
+       (successive-merge
+	(sort-lst (append (list (make-code-tree (car lst) (cadr lst)))
+			  (cddr lst))) 
+	))))
+(define sample-pairs
+  '((A 4) (B 2) (C 1) (D 1)))
 (define (generate-huffman-tree pairs)
-  (display 'he)
-  )
+  (successive-merge (sort-lst (make-leaf-set pairs))))
+
+
 

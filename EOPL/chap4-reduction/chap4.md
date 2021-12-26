@@ -54,7 +54,38 @@ confluence, diamond property,
 
 ### 4.3.1 Applicative-Order Reduction
 P134, 
+- a constant
+- a variable,
+- an abstraction, a lambda expression,
 
+lambda-value calculus,
 
+redex?
+(reduce-once-appl)
+applicative $\beta$-redex, 
+
+reduce的原则:
+- 输入一个parsed lambda calculus expression, reduces the 1st redex it finds,如果找到，就返回整个reduced expression
+- 如果expression是一个常量、变量、lambda expression, 此时无法被reduced,
+- 如果是一个applicative $\beta$-redex, 开始reduction, 返回result,
+- 如果是一个application而不是$\beta$-redex, 则
+    - 首先尝试reduce the operator,
+    - 然后再尝试reduce the operand,
+    - 当我们成功的reduce a subexpression, 子表达式时，必须构造一个新的表达式，里面包含精简后的子表达式
+
+```scheme
+(reduce-once-appl exp succeed fail)
+;; fail, succeed are called continuations,
+;; computation将如何继续，在event of success or failure,
+;; 
+(define-record lit (datum))
+(define-record varref (var))
+(define-record app (rator rands))
+
+```
+P136, app? 84(define-record app (rator rand)), 140, 
+
+beta-redex?, r-P106, 没有做。补上吧。躲不过去。
+beta-reduce, r-P107,
 
 
