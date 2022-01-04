@@ -98,7 +98,6 @@ formal parameters
 - E is the form (E1 E2), and x occurs bound in E1 or E2
 - E is of the form (lambda (y) E'), x occurs bound in E' or x and y are the same variable and y occurs free in E'
 
-
 operands
 
 扩展if expressions, 来定义occurs-free, occurs-bound
@@ -124,13 +123,19 @@ to which declaration a reference refers
 lexical address of the variable reference.
 $(v: d p)$, lexical depth, declaration position, 这种表示方式确实是很方便。变量名叫什么？反而无关紧要了。They're not absolutely necessary in writing program.
 
-
-
-
 ### Exercise 2.3.10
 这里的代码非常精巧，对源代码进行了分析和转换。
 
 ```scheme
+;; lexical depth, declaration position,
+(v: d p)
+
+<exp>::=<varref>
+      | (if <exp> <exp> <exp>)
+      | (lambda({<var>}*) <exp>)
+      | ({<exp>}+)
+
+
 (lexical-address '(lambda (a b c)                                              
                       (if (eqv? b c)                                             
                           ((lambda (c)                                           
@@ -152,7 +157,7 @@ a general program transformation rule. 规则，
 
 exp[y/x], exp with y for x,
 
-alpha-conversion, 这个被称为,
+**alpha-conversion**, 这个被称为,
 
 rename. 
 
@@ -173,6 +178,47 @@ occurs-bound:
 - E is of the form (E1 E2) and x occurs bound in E1 or E2
 - E is of the form (lambda (y) E'), where x occurs bound in E' or x and y are the same variable and y occurs free in E'
 
+```scheme
+> (occurs-free? 'x 'x)
+#t
+> (occurs-free? 'x 'y)
+#f
+> (occurs-free? 'x '(lambda (x) (x y)))
+#f
+> (occurs-free? 'x '(lambda (y) (x y)))
+#t
+> (occurs-free? 'x '((lambda (x) x) (x y)))
+#t
+> (occurs-free? 'x '(lambda (y) (lambda (z) (x (y z)))))
+#t
+> (occurs-bound? 'x 'x)
+#f
+> (occurs-bound? 'x  'y)
+#f
+> (occurs-bound? 'x '(lambda (x) (x y)))
+#t
+> (occurs-bound? 'x '(lambda (y) (x y)))
+#f
+> (occurs-bound? 'x '((lambda (x) x) (x y)))
+#t
+> (occurs-bound? 'x '(lambda (y) (lambda (z) (x (y z)))))
+#f
+```
+
+## 课程
+<< principles-of-programming-languages >>, 2019 course,
+
+Indiana University, Venkatesh Choppella,
+
+Page 89,
+ 
+
+这里是一个简化的语言, BNF, 只有一个变量!作为lambda()的参数。
+
+* bound, refers to a formal parameter, in the expression, lexically bound
+* globally bound , 
+* 表达式的值只与occur-free的值有关 ， 包围这些表达式的环境必须提供这些值,
+* 表达式的值
 
 
 

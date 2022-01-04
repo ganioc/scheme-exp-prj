@@ -300,7 +300,6 @@
 		    )
 		  )
 		))
-
 ;; (car&cdr 'a '(a b c) 'fail)
 ;; >    (lambda (lst) (car lst))
 ;; (car&cdr 'c '(a b c) 'fail)
@@ -490,6 +489,7 @@
 	       (occurs-bound? var (cadr exp)))]
      )))
 
+
 ;; filter-in
 (define filter-in
   (lambda (pred lst)
@@ -529,7 +529,7 @@
 	       (extract-vars exp))))
 
 ;; 2.3.10
-;;
+;; address is lexical address, 
 (define make-lexical-address
   (lambda (v d p)
     (list v ': d p)))
@@ -554,16 +554,18 @@
 
 ;; 获取 exp 在 一个list中的address, 
 (define get-lexical-address
-  (trace-lambda get-lexical-address (exp addresses)
-    (define iter
-      (lambda (lst)
-	(cond 
-	 [(null? lst) (list exp ': 'free)]
-	 [(eqv? exp (get-v (car lst))) (car lst)]
-	 [else
-	  (get-lexical-address exp (cdr lst))])
-	))
-    (iter addresses)))
+  (trace-lambda
+   get-lexical-address
+   (exp addresses)
+   (define iter
+     (lambda (lst)
+       (cond 
+	[(null? lst) (list exp ': 'free)]
+	[(eqv? exp (get-v (car lst))) (car lst)]
+	[else
+	 (get-lexical-address exp (cdr lst))])
+       ))
+   (iter addresses)))
 
 ;; 在list中查找v, 找到就返回调用cdr的次数;也就是在list中的位置
 (define index-of
@@ -577,6 +579,7 @@
 	  (helper (cdr lst) (+ index 1))]
 	 )))
     (helper declarations 0)))
+
 ;; 找到declarations所有的变量,
 (define filter-bound
   (lambda (declarations)
@@ -601,32 +604,37 @@
     (iter addresses)))
 ;; 
 (define cross-contour
-  (trace-lambda cross-contour (declarations addresses)
-		(let ((bound (filter-bound declarations))
-		      (free (filter-free declarations addresses)))
-		  (append bound free))))
+  (trace-lambda
+   cross-contour
+   (declarations addresses)
+   (let ((bound (filter-bound declarations))
+	 (free (filter-free declarations addresses)))
+     (append bound free))))
+
 ;; 
 (define lexical-address-helper
-  (trace-lambda lexical-address-helper (exp addresses)
-		(cond
-    		 [(symbol? exp)
-      		  (get-lexical-address exp addresses)]
-     		 [(eqv? (car exp) 'if)
-      		  (list 'if
-	    		(lexical-address-helper (cadr exp) addresses)
-	    		(lexical-address-helper (caddr exp) addresses)
-	    		(lexical-address-helper (cadddr exp) addresses))]
-     		 [(eqv? (car exp) 'lambda)
-      		  (list 'lambda
-			(cadr exp)
-			(lexical-address-helper (caddr exp)
-						(cross-contour (cadr exp)
-						   	       addresses)))]
-     		 [else
-      		  (map (lambda (subex)
-	     		 (lexical-address-helper subex addresses))
-		       exp)]
-		 )))
+  (trace-lambda
+   lexical-address-helper
+   (exp addresses)
+   (cond
+    [(symbol? exp)
+     (get-lexical-address exp addresses)]
+    [(eqv? (car exp) 'if)
+     (list 'if
+	   (lexical-address-helper (cadr exp) addresses)
+	   (lexical-address-helper (caddr exp) addresses)
+	   (lexical-address-helper (cadddr exp) addresses))]
+    [(eqv? (car exp) 'lambda)
+     (list 'lambda
+	   (cadr exp)
+	   (lexical-address-helper (caddr exp)
+				   (cross-contour (cadr exp)
+						  addresses)))]
+    [else
+     (map (lambda (subex)
+	    (lexical-address-helper subex addresses))
+	  exp)]
+    )))
 
 (define lexical-address
   (lambda (exp)
@@ -634,8 +642,11 @@
     ))
 ;; (get-variable '(: 0 1) '((a : 1 0) (b : 0 1) (c : 1 1)))
 ;; > b
+;; Find exp's address from addresses, 
 (define get-variable
-  (trace-lambda get-variable (exp addresses)
+  (trace-lambda
+   get-variable
+   (exp addresses)
     (cond
      [(eqv? 'free (cadr exp))
       (car exp)]
@@ -649,7 +660,7 @@
      [else
       (get-variable exp (cdr addresses))])
     ))
-
+;; Is this expression a reference?
 (define reference?
   (lambda (exp)
     (eqv? ': (car exp))))
@@ -701,28 +712,38 @@
 ;; (rename '((lambda (x) x) x) 'y 'x)
 ;;    > ((lambda (x) x) y)
 ;; 还是有问题啊，对这个的理解还是不够深！看以后回来再解决这个问题吧。
-;; 
+;; 需要修改判定的scope, 
+;; 加一个判断：如果replace occurs-free in exp, 那么就返回f
 (define rename
-  (trace-lambda rename (exp replace origin)
-		(letrec
-		    ((helper
-		      (trace-lambda helper (exp scope)
-			(cond
-			 [(symbol? exp)
-			  (if (and (eqv? exp origin)
-				   (occurs-free? exp scope))
-			      replace
-			      exp)]
-			 [(eqv? (car exp) 'lambda)
-			  (list 'lambda
-				(helper (cadr exp) scope) 
-				(helper (caddr exp) scope))]
-			 [else
-			  (map (lambda (subex)
-				 (helper subex subex))
-			       exp)]
-			 ))))
-		  (helper exp exp)
-		  )
-		))
+  (trace-lambda
+   rename
+   (exp replace origin)
+   (letrec
+       ((helper
+	 (trace-lambda
+	  helper
+	  (exp scope)
+	  (cond
+	   [(occurs-free? replace exp)
+	    #f
+	    ]
+	   [(symbol? exp)
+	    (if (and (eqv? exp origin)
+		     (occurs-free? exp scope))
+		replace
+		exp)]
+	   [(eqv? (car exp) 'lambda)
+	    (if (occurs-free? exp scope)
+		(list 'lambda
+		      (list replace)
+		      (helper exp (caddr scope)))
+		scope)
+	    ]
+	   [else
+	    (map (lambda (subex)
+		   (helper subex subex))
+		 exp)]
+	   ))))
+     (helper exp exp)
+     )))
 
