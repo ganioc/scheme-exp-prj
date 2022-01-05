@@ -203,12 +203,51 @@ occurs-bound:
 #t
 > (occurs-bound? 'x '(lambda (y) (lambda (z) (x (y z)))))
 #f
+> (rename '(lambda (b) (b a)) 'c 'a) 
+(lambda (b) (b c))
+> (rename '((lambda (x) x) x) 'y 'x)   
+((lambda (x) x) y) 
+> (rename '(a b) 'a 'b) 
+#f
+> (occurs-free? 'a '(lambda (a) (lambda (b) (b a))))
+#f
+> (alpha-convert '(lambda (a) (lambda (b) (b a))) 'c)
+(lambda (c) (lambda (b) (b c)))     
+> (alpha-convert '(lambda (x) ((lambda (x) x) x)) 'y) 
+(lambda (y) ((lambda (x) x) y))  
+> (alpha-convert '(lambda (x) (y x)) 'y)  
+#f
+
 ```
 
 ## 课程
 << principles-of-programming-languages >>, 2019 course,
 
 Indiana University, Venkatesh Choppella,
+
+### 其它课程
+ * Operating Systems, Remzi , Three Easy Pieces, (https://pages.cs.wisc.edu/~remzi/OSTEP/preface.pdf)
+  * UNIX and C
+  * Serial Driver
+  * Context Switch
+  * virtualization,
+  * concurrency
+  * persistence,
+* Object-Oriented Data Structures Using Java
+  * Algorithms and Complexity (AL)
+  * Discrete Structures
+  * Parallel and Distributed Computing
+  * Software Development Fundamentals
+* Essentials of Computer Architecture
+  * 
+* Fast and Effective Embedded System Design: Applying the ARM mbed
+  * i/o
+  * control
+  * memory
+* Data communication and Networking
+  * 
+* Software Engineering
+
 
 Page 89,
  

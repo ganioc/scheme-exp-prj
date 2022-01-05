@@ -436,33 +436,29 @@
 
 ;; 6
 (define sort
-  (trace-lambda sort (predicate lst)
-		(define less-than
-		  (lambda (n)
-		    (lambda (x)
-		      (predicate x n))))
-		(define greater-or-equal-than
-		  (lambda (n)
-		    (lambda (x)
-		      (not (predicate x n)))))
-		(letrec ((operate
-			  (lambda (lst)
-			    (if (null? lst)
-				'()
-				(append (operate (filterin (less-than (car lst))
-							   (cdr lst)))
-					(list (car lst))
-					(operate (filterin (greater-or-equal-than (car lst))
-							   (cdr lst))))
-				
-				)
-
-			    )))
-		  (operate lst)
-		  )
-		))
-
-
+  (trace-lambda
+   sort
+   (predicate lst)
+   (define less-than
+     (lambda (n)
+       (lambda (x)
+	 (predicate x n))))
+   (define greater-or-equal-than
+     (lambda (n)
+       (lambda (x)
+	 (not (predicate x n)))))
+   (letrec ((operate
+	     (lambda (lst)
+	       (if (null? lst)
+		   '()
+		   (append (operate (filterin (less-than (car lst))
+					      (cdr lst)))
+			   (list (car lst))
+			   (operate (filterin (greater-or-equal-than (car lst))
+					      (cdr lst))))
+		   ))))
+     (operate lst)
+     )))
 
 ;; 2.3.1
 ;; Page 57,
@@ -722,28 +718,46 @@
        ((helper
 	 (trace-lambda
 	  helper
-	  (exp scope)
+	  (exp)
 	  (cond
 	   [(occurs-free? replace exp)
-	    #f
-	    ]
+	    #f]
 	   [(symbol? exp)
 	    (if (and (eqv? exp origin)
-		     (occurs-free? exp scope))
+		     (occurs-free? origin exp))
 		replace
 		exp)]
 	   [(eqv? (car exp) 'lambda)
-	    (if (occurs-free? exp scope)
+	    (if (occurs-free? origin exp)
 		(list 'lambda
-		      (list replace)
-		      (helper exp (caddr scope)))
-		scope)
-	    ]
+		      (cadr exp)
+		      (helper (caddr exp)))
+		exp)]
 	   [else
 	    (map (lambda (subex)
-		   (helper subex subex))
+		   (helper subex))
 		 exp)]
 	   ))))
-     (helper exp exp)
+     (helper exp)
      )))
 
+;; Exe 2.3.15
+;; alpha-convert, change bounded variable to v
+;; use rename, how to use it?
+;; only work on lambda expression,
+(define alpha-convert
+  (trace-lambda
+   alpha-convert
+   (exp v)
+   (let ((origin (caadr exp)))
+     (if (not (occurs-bound? origin exp))
+	 #f
+	 (if (occurs-free? v exp)
+	     #f
+	     ;; (alpha-helper exp v origin)
+	     (list 'lambda
+		   (list v)
+		   (rename (caddr exp)
+			   v
+			   origin))))
+     )))
