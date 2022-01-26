@@ -13,33 +13,44 @@
 		    cdr-result))))))
 
 ;; Exercise 3.1.2
-(define let->application-helper
-  (trace-lambda let->application-helper (lst)
+(define let->application-helper2
+  (trace-lambda let->application-helper2 (lst op)
 		(cond
 		 [(null? lst) '()]
 		 [else
-		  (cons (cadar lst)
-			(let->application-helper
-			 (cdr lst)))])))
-(define let->application-collect
-  (trace-lambda let->application-collect (lst)
-		(cond
-		 [(null? lst) '()]
-		 [else
-		  (cons (caar lst)
-			(let->application-collect
-			 (cdr lst)))])))
+		  (cons (op lst)
+			(let->application-helper2
+			 (cdr lst)
+			 op))])))
+;; (define let->application-helper
+;;   (trace-lambda let->application-helper (lst)
+;; 		(cond
+;; 		 [(null? lst) '()]
+;; 		 [else
+;; 		  (cons (cadar lst)
+;; 			(let->application-helper
+;; 			 (cdr lst)))])))
+;; (define let->application-collect
+;;   (trace-lambda let->application-collect (lst)
+;; 		(cond
+;; 		 [(null? lst) '()]
+;; 		 [else
+;; 		  (cons (caar lst)
+;; 			(let->application-collect
+;; 			 (cdr lst)))])))
 
 (define let->application
   (trace-lambda let->application (slst)
 		(if (eqv? 'let (car slst))
 		    (cons
 		     (list 'lambda
-			   (let->application-collect
-			    (cadr slst))
+			   (let->application-helper2
+			    (cadr slst)
+			    caar)
 			   (caddr slst))
-		     (let->application-helper
-			    (cadr slst))
+		     (let->application-helper2
+		      (cadr slst)
+		      cadar)
 		     )
 		    '())
 		))
