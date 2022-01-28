@@ -43,12 +43,14 @@ false-op
 
 ```
 ## branching
-
 Exercise 3.3.2
 
-```
-case
+```scheme
+(case key
+    (key-list1 consequent1)
 
+    (key-listn consequentn)
+    (else alternative))
 ```
 variant-case?
 
@@ -78,6 +80,22 @@ variant-case
 field-list
 
 record-expression,
+
+### Abstract Syntax and Representation Using Records
+解释器和编译器通常是 Syntax Directed,  guided by knowledge of the grammar rules. Any subparts corresponding to nonterminals in the grammar rules should be readily accessible. 语法规则。
+
+抽象语法, 代表了语法规则, 提供了访问子部件的规则和方法。为人类理解设计的语法是具体语法。Concrete Syntax. 我们必须定义具体语法，非终结字符。
+
+```scheme
+lit (datum)
+varref (var)
+lambda (formal body)
+app (rator rand)
+```
+
+aST, 抽象语法树。AST上的每个节点都代表了expression语法推导的一个步骤，相对应。内部节点的标签与production name相对应。边为nonterminal occurrence的名称相对应。leaves就是terminal string. terminal string就是parentheses, 并没有任何信息。
+
+如果程序是一串字符串的话，那么推导出抽象语法树，就是parsing, 与我们拿AST来干什么而无关。
 
 #### No variant-case
 没有发现chez scheme的variant-case
@@ -344,7 +362,7 @@ parsing program叫做parser,
 
 ## 3.4.4 An Implementation of Records
 
-## Data Abstraction
+## 3.5 Data Abstraction
 数据的抽象。底层的实现是有效率的, 改变数据的表示形式，比如表，链表，平衡二叉树。
 数据抽象的目的是为了隐藏底下的实现细节。
 
@@ -355,7 +373,7 @@ vector的表现形式是连续的内存，可以频繁读写,;list在空间中�
 - opaque, 
 - transparent, 
 
-原始数据为opaque的，如: procedure, number, pair, vector, character, symbol, string, boolean, empty list,
+原始数据为opaque的，如: procedure, number, pair, vector, character, symbol, string, boolean, empty list,默认是disjoint和不透明的。can not see inside of them. Representation independence, 表现独立 ， 只有与type相关的procedure才能用来生成以及访问type中的元素。
 
 Lists是一个派生的类型，consisting of pairs and a empty list.
 
@@ -363,18 +381,20 @@ empty list, null?,
 
 如果将define-record, 由vecotr转为lists, leaf-sum这些以前的函数不需要改变。这就是抽象的强大威力，改变底层，而上层无需改变。
 
+使用procedure来表示数据类型, data type。如果使用record的话，效率更高, 可以用低级语言来实现, 不支持first-class procedures. 
+
 ### 从Procedural Structure to Data Structure表示
 #### Procedural Representation
-finite functions,
+演示如何将procedural representaiton -> record representation. finite functions, 对每一个 element of a finite set of symbols, 联系一个值。一个有限符号集合，每一个符号都有一个值。
 
 finite set of symbols. 
 
 - environment, 
     associates variables with their values in a programming language implementation
 - symbol table,
-    associate variables with lexical address information at compile time
+    associate variables with lexical address information at compile time；With lexical address, 
 
-FF, finite function, ADT, 3个procedures:
+FF, finite function, 有限函数 ，ADT, 3个procedures:
 - create-empty-ff,
 - extend-ff, 
     takes a symbol, sym, value, val, a finitie function ff, 返回一个新的ff, associate sym with val, 
@@ -388,8 +408,13 @@ FF, finite function, ADT, 3个procedures:
 
 
 #### Record Representation
+转换方式:
+* 确定lambda expression, 生成type的values, distintct record type ,每一个expression
+* 确定free variables, 对每一个变量分配一个对应的record type的field,
+* 定义apply procedure, variant-case expression, 
 
-
+### Alternative Data Structure Representations,
+Deriving data structure representations. 
 
 
 

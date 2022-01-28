@@ -120,7 +120,7 @@
 ;; case
 
 (load "./appendix.scm")
-
+;; define interior
 (define-record interior (symbol left-tree right-tree))
 
 (define tree-1 (make-interior 'foo
@@ -128,7 +128,7 @@
 					     1
 					     2)
 			      3))
-
+;; sums the leaves of a tree
 (define leaf-sum
   (trace-lambda leaf-sum (tree)
 		(cond
@@ -142,7 +142,7 @@
 		  (error "leaf-sum: Invalid tree"
 			 tree))
 		 )))
-
+;; define leaf
 (define-record leaf (number))
 
 (define tree-2
@@ -255,14 +255,15 @@
 
 (define max-interior
   (lambda (tree)
-
     (tree-value->symbol
      (max-value tree (interior->symbol tree))
      )))
 
 ;; Exercise 3.4.3
 ;;
+;; number
 (define-record lit (datum))
+;; symbol
 (define-record varref (var))
 (define-record lambda (formal body))
 (define-record app (rator rand))
@@ -306,6 +307,36 @@
      (app (rator rand)
 	  (union (free-vars rator)
 		 (free-vars rand))))))
+
+;; 3.4.4
+
+
+;; 3.4.5
+(define free?
+  (trace-lambda
+   free?
+   (sym expression)
+   (variant-case
+    expression
+    (lit (datum) (eqv? datum sym))
+    (varref (var) (eqv? var sym))
+    (lambda (formal body)
+      (and (not (eqv? formal body))
+	   (free? sym body)))
+    (app (rator rand)
+	 (or (free? sym rator)
+	     (free? sym rand)))
+    (else (error "Unknown item." expression))
+    )))
+;; > (free? 'v (parse '(lambda (y) (x (x y)))))
+;; #f
+;; > (free? 'x (parse '(lambda (y) (x (x y)))))
+;; #t
+
+;; 3.4.6
+
+
+
 ;; Finite Function, FF
 ;;
 (define create-empty-ff
@@ -361,7 +392,7 @@
     (extend-ff
      'y 8
      (create-empty-ff)))))
-
+;; 输入symbol list, value list,
 (define extend-ff*
   (lambda (sym-list val-list ff)
     (if (null? sym-list)

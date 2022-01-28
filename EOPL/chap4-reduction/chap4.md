@@ -39,6 +39,40 @@ With a minimum of distraction, most abstract context possible. lambda expression
 ;; eta-conversion
 ;; eta-reduction, 
 
+;; 4.2.1
+;; 1.
+((lambda (x) (x (y x)))
+z)
+=> 
+(z (z x))
+;; 2.
+((lambda (x) (x y))
+    (lambda (y) (x y)))
+=>
+((lambda (z) (x z)) y)
+=>
+(x y)
+;; 3.
+((lambda (x)
+    (lambda (y) ((x y) z)))
+    (lambda (a) y))
+=>
+(lambda (y) (y z))
+;; 4.
+((lambda (x)
+    (lambda (y)
+        ((lambda (x) (z x))
+         (lambda (y) (z y)))))
+    (lambda (y) y))
+=>
+((lambda (x)
+    (lambda (y)
+        (z (lambda (t) (z t)))))
+    (lambda (y) y))
+=>
+(z (lambda (t) (z t)))
+
+
 
 ```
 

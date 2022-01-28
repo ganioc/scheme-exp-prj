@@ -1,3 +1,5 @@
+;; load variat-case
+;;
 (load "../chap3-expression/appendix.scm")
 
 (define-record lit (datum))
@@ -10,6 +12,9 @@
    reasoning
    (x y)
    (+ (* x 3) y)))
+;; Exercise 4.2.1
+;; 1. ((lambda (x) (x (y x)))
+
 
 ;; Exercise 4.2.2
 
