@@ -93,12 +93,30 @@
     )))
 ;;> (unparse (substitute (parse '(a b)) (parse 'c) 'b))
 ;; (a c)
-(define chap4-tst-lambda (parse '(lambda (a) (a b))))
+;;> (unparse (substitute (parse '(lambda (a) (a b))) (parse 'a) 'b) 
+;; (lambda (g57) (g57 a))
 
 
 ;; Exercise 4.2.4
 ;; β-reduce, beta-reduce,
-
+(define beta-reduce
+  (trace-lambda
+   beta-reduce
+   (e)
+   (if (beta-redex? e)
+       (let ((rator (app->rator e))
+	     (rand (app->rand e)))
+	 (if (lambda? rator)
+	     (substitute (lambda->body rator)
+			 rand
+			 (lambda->formal rator))
+	     e)
+	 )
+       e)))
+;; > (unparse (beta-reduce (parse '((lambda (x) (y x)) z))))
+;; (y z)
+;; (unparse (beta-reduce (parse '((lambda (x) (lambda (y) (x y))) (y w)))))
+;; (lambda (g59) ((y w) g59))
 
 ;; Exercise 4.2.5
 ;; eta-redex?,

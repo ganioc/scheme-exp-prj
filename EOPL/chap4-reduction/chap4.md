@@ -291,7 +291,7 @@ many ways to reduce the expression.
 Can an expression be reduced to more than one constant? Fortunately , no. 
 
 ### Church-Rosser theorem,
-confluence, or diamond property, 
+confluence, or diamond property, 最终化简成一个相同的表达式；lambda 表达式;
 
 ### 4.3.1 Applicative-Order Reduction
 什么样的reduction strategy最适合，最能描绘Scheme的行为呢?
@@ -354,6 +354,7 @@ substitute,
 
 beta-reduce, r-P107,
 需要把这两个函数给实现了，太难了。第2版本没有, 第3版本里面也没有。
+;; 现在都实现了，这两个函数
 
 formal, 是什么格式？
 body, 是make- record格式。
@@ -361,7 +362,7 @@ gensym, 的类型是什么呢？ 如何进行转换呢？
     (gensym) , pretty-name, unique-name,
         > (gensym->unique-string sym1) 
         > (symbol->string sym1)
-        
+
     (gensym->unique-string)
     (gensym-prefix)
     (gensym-counter)
