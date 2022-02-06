@@ -132,6 +132,7 @@
 
 
 
+
 ;; Figure 4.3.2
 (define answer?
   (lambda (exp)
@@ -159,6 +160,59 @@
 		    (succeed (make-app rator reduced-rand)))
 		  fail))))))))
 
-;; Exercise 4.3.1
 
+;; Exercise 4.3.1
+;; reduce-history
+(define reduce-history-helper
+  (trace-lambda
+   reduce-history-helper
+   (exp num collect)
+   (if (or (not (beta-redex? exp))
+	   (<= num 0)
+	   )
+       collect
+       (let ((rator (app->rator exp))
+	     (rand (app->rand exp)))
+	 (if (app? rand)
+	     (let ((new-exp (beta-reduce rand)))
+	       (reduce-history-helper
+		(make-app rator new-exp)
+		(- num 1)
+		(append collect
+			(list (unparse
+			       (make-app rator new-exp))))))
+	     (if (not (lambda? rator))
+		 collect
+		 (let ((new-exp (beta-reduce exp)))
+		   (reduce-history-helper
+		    new-exp
+		    (- num 1)
+		    (append collect
+			    (list (unparse new-exp)))))
+		 )
+	     )
+	 
+	)
+       )
+   ))
+;; > (reduce-history '((lambda (x) (x ((lambda (x) y) z))) w) 5)
+;; ((w ((lambda (x) y) z)) (w y))  
+;; > (reduce-history '((lambda (x) (x x)) (lambda (x) ( x x))) 3)
+;;(((lambda (x) (x x)) (lambda (x) (x x)))
+;; ((lambda (x) (x x)) (lambda (x) (x x)))
+;; ((lambda (x) (x x)) (lambda (x) (x x)))) 
+
+;;(let ((new-exp (beta-reduce exp)))
+	     ;; (reduce-history-helper
+	     ;;  new-exp
+	     ;;  (- num 1)
+	     ;;  (append collect
+	     ;; 	      (list (unparse new-exp) 
+	     ;; 		    ))))
+
+(define reduce-history
+  (lambda
+   (exp num)
+   (reduce-history-helper (parse exp) num '())
+   ))
 
