@@ -302,12 +302,16 @@ P134, reductive的结果为:
 - an abstraction, a lambda expression, 抽象形式, anything but an application, 
 
 对于application-order reduction, β-reduction只能适用于:operator, operand早已是answers,
+也就是上述三种类型之一，才可以。
 
-lambda-value calculus,
+lambda-value calculus,？
 
 redex?
 (reduce-once-appl)
 applicative $\beta$-redex, 
+
+(reduce-once-appl exp succeed fail), succeed, fail are called continuations,
+
 
 reduce的原则:
 - 输入一个parsed lambda calculus expression, reduces the 1st redex it finds,如果找到，就返回整个reduced expression
@@ -368,6 +372,64 @@ gensym, 的类型是什么呢？ 如何进行转换呢？
     (gensym-counter)
 
 chez-scheme, 如何获得关于函数的帮助呢？
+
+### Leftmost Reduction,
+normal form, no furthre reduciton is possible, 
+normal order reduction, 必能找到一个最终的结果，
+
+## 4.4 Defining Recursive Procedures in the Lambda Calculus
+(Y f) = (f (Y f))
+
+```scheme
+(lambda (f)
+    ((lambda (x) (f (x x))  )
+      (lambda (x) (f (x x)))))
+;; Y combinator, no free variables, has no formal form, 
+(Y f) = (f (Y f))
+
+
+```
+
+## 4.5 Sequencing and Imperative Programming
+assignment and i/o operations, side effects, 顺序执行，执行顺序就变得很关键了。
+
+functioanl style,
+imperative style,
+
+sequencing, order side effects performed.
+display,
+newline,
+write,
+
+输入:
+    read-char,
+    read, 
+    eof-boject? , 
+    eval, 
+### Data Structure Mutation
+(set-car!)
+(set-cdr!)
+(vector-set! v index val)
+
+## Variable Assignment and Sharing
+variables, variable references, 
+locations, values contained in locations,
+variable assignment, (set! var exp)
+
+exclamation mark, read "bang",
+P151
+
+## Streams
+stream-car
+stream-cdr, 
+make-stream,
+the-null-stream,
+stream-null?
+
+thunks, procedures of no arguments , used in this way to delay evaluation.
+
+发现后面这几个章节，实际上匆匆略过，如果没有自学lambda calculus,
+的话，很难理解。匆匆略过的部分，没讲什么内容，所以比较容易理解。
 
 
 -------------------------

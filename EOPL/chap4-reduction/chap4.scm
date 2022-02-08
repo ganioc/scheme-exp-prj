@@ -195,6 +195,11 @@
 	)
        )
    ))
+(define reduce-history
+  (lambda
+   (exp num)
+   (reduce-history-helper (parse exp) num '())
+   ))
 ;; > (reduce-history '((lambda (x) (x ((lambda (x) y) z))) w) 5)
 ;; ((w ((lambda (x) y) z)) (w y))  
 ;; > (reduce-history '((lambda (x) (x x)) (lambda (x) ( x x))) 3)
@@ -202,17 +207,74 @@
 ;; ((lambda (x) (x x)) (lambda (x) (x x)))
 ;; ((lambda (x) (x x)) (lambda (x) (x x)))) 
 
-;;(let ((new-exp (beta-reduce exp)))
-	     ;; (reduce-history-helper
-	     ;;  new-exp
-	     ;;  (- num 1)
-	     ;;  (append collect
-	     ;; 	      (list (unparse new-exp) 
-	     ;; 		    ))))
-
-(define reduce-history
-  (lambda
+;; Exercise 4.3.2
+;; reduce*
+(define reduce*-helper
+  (trace-lambda
+   reduce*-helper
    (exp num)
-   (reduce-history-helper (parse exp) num '())
+   (if (not (beta-redex? exp))
+       exp
+       (if (<= num 0)
+	   #f
+	   (let ((rator (app->rator exp))
+		 (rand (app->rand exp)))
+	     (if (app? rand)
+		 (let ((new-exp (beta-reduce rand)))
+		   (reduce*-helper
+		    (make-app rator new-exp)
+		    (- num 1)))
+		 (if (not (lambda? rator))
+		     exp
+		     (let ((new-exp (beta-reduce exp)))
+		       (reduce*-helper
+			new-exp
+			(- num 1))))))))
    ))
+(define reduce*
+  (lambda (exp num)
+    (let ((result (reduce*-helper (parse exp) num)))
+      (if (not (boolean? result))
+	  (unparse result)
+	  result)
+      )))
+
+;; Exercise 4.3.5
+
+;; Exercise 4.3.6
+
+(define read-eval-print
+  (lambda ()
+    (display "--> ")
+    (write (eval (read)))
+    (newline)
+    (read-eval-print)))
+
+(define reverse!
+  (letrec ((loop
+	    (trace-lambda
+	     loop
+	     (last ls)
+	     (let ((next (cdr ls)))
+	       (set-cdr! ls last)
+	       (if (null? next)
+		   ls
+		   (loop ls next))))))
+    (lambda (ls)
+      (if (null? ls)
+	  ls
+	  (loop '() ls)))))
+(define ls (list 1 2 3 4 5))
+
+;; Exercise 4.5.2
+(define c (cons 3 '()))
+(define b (cons 2 c))
+(define a (cons 1 b))
+(define x (cons 4 a))
+(define y (cons 5 b))
+(define z (cons 6 c))
+
+
+
+
 
