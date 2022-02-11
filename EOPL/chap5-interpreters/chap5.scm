@@ -18,8 +18,7 @@
 	  (make-lambda (caadr datum)
 		       (parse (caddr datum)))
 	  (make-app (parse (car datum))
-		    (parse (cadr datum))
-		    )))
+		    (parse (cadr datum)))))
      (else
       (error "parse: Invalid concrete syntax" datum)))))
 
@@ -90,14 +89,18 @@
      (else (error "Invalid procedure:" proc)))))
 ;; args should be a list
 (define apply-prim-op
-  (lambda (prim-op args)
-    (case prim-op
-      ((+) (+ (car args) (cadr args)))
-      ((-) (- (car args) (cadr args)))
-      ((*) (* (car args) (cadr args)))
-      ((add1) (+ (car args)  1))
-      ((sub1) (- (car args)  1))
-      (else (error "Invalid prim-op name: " prim-op)))))
+  (trace-lambda
+   apply-prim-op
+   (prim-op args)
+   (case prim-op
+     ((+) (+ (car args) (cadr args)))
+     ((-) (- (car args) (cadr args)))
+     ((*) (* (car args) (cadr args)))
+     ;; ((add1) (+ (car args)  1))
+     ;; ((sub1) (- (car args)  1))
+     ((add1) (+ args  1))
+     ((sub1) (- args  1))     
+     (else (error "Invalid prim-op name: " prim-op)))))
 
 (define prim-op-names '(+ - * add1 sub1))
 
