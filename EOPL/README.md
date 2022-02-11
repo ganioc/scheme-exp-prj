@@ -190,3 +190,38 @@ AST for expression exp
 ## Current Breakpoint
 
 Page 107
+
+# Appeendix
+About further readings.
+
+Books change the way you look at the world.
+
+<< Programming Languages: Application and Interpretation >>
+    by Shriram Krishnamurthi, Shriram Krishnamurthi
+
+- 1st Structure and Interpretation of Computer Programs, by Hal Abelson
+and Gerry Sussman With Julie Sussman, 1985,
+- 2nd, Godel, Escher, Bach: an Eternal Golden Braid, Douglas R. Hofstadter, 1979,
+- chap 1-4, recursive programming and sybolic computation,
+    - The little Lisper by Friedman and Felleisen, 1989,
+    - Scheme and the Art of Programming, 1989, Springer and Friedman,
+        * less ambitious than SICP,
+    - discrete mathematics, for computer science,
+- chap 5-7, meta-circular interpreter,
+    - denotational semantics, 
+    - object-oriented language,
+    - CLOS, Common Lisp object -oriented,
+- chap 8-10, CPS, continuation-passing style, 
+读了一半，没有下文了。
+
+## Appendix B Abstract Syntax
+a list structure language,
+a character string language,
+-> to an identical parse tree, using the record declarations ,
+
+最后生成同样的AST, 
+
+
+    
+
+
