@@ -81,10 +81,11 @@ field-list
 
 record-expression,
 
-### Abstract Syntax and Representation Using Records
+### 3.4.3 Abstract Syntax and Representation Using Records
 解释器和编译器通常是 Syntax Directed,  guided by knowledge of the grammar rules. Any subparts corresponding to nonterminals in the grammar rules should be readily accessible. 语法规则。
 
-抽象语法, 代表了语法规则, 提供了访问子部件的规则和方法。为人类理解设计的语法是具体语法。Concrete Syntax. 我们必须定义具体语法，非终结字符。
+抽象语法, 代表了语法规则, 提供了访问子部件的规则和方法。
+为人类理解设计的语法是具体语法。Concrete Syntax. 我们必须定义具体语法，非终结字符。
 
 ```scheme
 lit (datum)

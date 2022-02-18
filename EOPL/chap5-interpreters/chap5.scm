@@ -1,10 +1,13 @@
 (load "appendix.scm")
 
+(import (apdx character-parse))
+
+;; concrete syntax
 (define-record lit (datum))
 (define-record varref (var))
 (define-record app (rator rands))
-(define-record lambda (formal body))
-(define-record arr (data))
+(define-record lambda (formals body))
+(define-record if (test-exp then-exp else-exp))
 
 (define parse
   (trace-lambda
@@ -14,11 +17,18 @@
      ((number? datum) (make-lit datum))
      ((symbol? datum) (make-varref datum))
      ((pair? datum)
-      (if (eq? (car datum) 'lambda)
-	  (make-lambda (caadr datum)
-		       (parse (caddr datum)))
-	  (make-app (parse (car datum))
-		    (parse (cadr datum)))))
+      (let ((operator (car datum)) )
+	(cond
+	 ((eq? operator 'lambda)
+	  (make-lambda (map parse (cadr datum)) 
+		       (caddr datum)))
+	 ((eq? operator 'if)
+	  (make-if (parse (cadr datum))
+		   (parse (caddr datum))
+		   (parse (cadddr datum))))
+	 (else (make-app (parse (car datum))
+			 (map parse (cdr datum))))
+	)))
      (else
       (error "parse: Invalid concrete syntax" datum)))))
 
@@ -29,10 +39,16 @@
      (lit (datum) datum)
      (varref (var) var)
      (lambda (formal body)
-       (list 'lambda (list formal)
+       (list 'lambda
+	     (map unparse formal)
 	     (unparse body)))
+     (if (test-exp then-exp else-exp)
+	 (list 'if
+	       (unparse test-exp)
+	       (unparse then-exp)
+	       (unparse else-exp)))
      (app (rator rand) (list (unparse rator)
-			     (unparse rand)))
+			     (map unparse rand)))
      (else
       (error "unparse: Invalid abstract syntax" exp)))))
 
@@ -81,7 +97,9 @@
 (define-record prim-proc (prim-op))
 
 (define apply-proc
-  (lambda (proc args)
+  (trace-lambda
+   apply-proc
+   (proc args)
     (variant-case
      proc
      (prim-proc (prim-op) (apply-prim-op prim-op
@@ -96,10 +114,10 @@
      ((+) (+ (car args) (cadr args)))
      ((-) (- (car args) (cadr args)))
      ((*) (* (car args) (cadr args)))
-     ;; ((add1) (+ (car args)  1))
-     ;; ((sub1) (- (car args)  1))
-     ((add1) (+ args  1))
-     ((sub1) (- args  1))     
+     ((add1) (+ (car args)  1))
+     ((sub1) (- (car args)  1))
+     ;; ((add1) (+ args  1))
+     ;; ((sub1) (- args  1))     
      (else (error "Invalid prim-op name: " prim-op)))))
 
 (define prim-op-names '(+ - * add1 sub1))
@@ -119,9 +137,16 @@
      exp
      (lit (datum) datum)
      (varref (var) (apply-env init-env var))
+     (if (test-exp then-exp else-exp)
+	 (let ((test-val (eval-exp test-exp))
+	       (then-val (eval-exp then-exp))
+	       (else-val (eval-exp else-exp)))
+	   (if test-val
+	       then-val
+	       else-val)))
      (app (rator rands)
 	  (let ((proc (eval-exp rator))
-		(args (eval-exp rands)))
+		(args (eval-rands rands)))
 	    (apply-proc proc args)))
      (else
 	  (error "Invalid abstract syntax: " exp)
@@ -137,6 +162,7 @@
 
 ;; Exercise 5.1.1
 ;; parse还是有问题的
+;; 现在可以了！0218
 (define read-eval-print
   (lambda ()
     (display "-->")

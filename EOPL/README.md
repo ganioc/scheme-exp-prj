@@ -222,6 +222,36 @@ a character string language,
 最后生成同样的AST, 
 
 
-    
+### 如何使用chez Scheme?
+ --program
+ --script, shell script, 
+    - #! /usr/bin/scheme --script
+    - #! /usr/bin/scheme-script
+-q , --quiet,
+Ctrl-D, 退出
+
+
+echo '(compile-file "filename")' | scheme
+compiling test_only.scm with output to test_only.so. ;; object file, 
+petite app.so
+
+如何运行一个脚本程序呢？
+% chez --program test_only.so
+% chez --program test_apdx.scm  ;; 这样也可以执行的, 
+
+expression editor, 必须定义了 TERM environment variable,
+
+revised report,  libraries and top-level programs,
+rnrs, 
+
+#### 重新定义appendix,
+(meta define)
+
+(library)
+(module m (y)
+    (define y '123))
+
+
+
 
 
