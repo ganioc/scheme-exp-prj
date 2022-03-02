@@ -1,20 +1,30 @@
 ;; test chap5
 ;;
+(load "appendix.scm")
+(load "abstract-syntax.scm")
 
-(import 
-  (chezscheme)
-  (apdx tst)
-  )
+;; (import 
+;;   (chezscheme)
+;;   (apdx abstract-syntax)
+;;   )
 
-(tst-name)
+;; (abstract-syntax-init)
 
-(display (format "A:~a" (tst-name)))
+;; (tst-name)
 
-(newline)
+;; (display (format "A:~a" (tst-name)))
 
-(display  (format "B:~a" (tst-add2 100))) 
+;; (newline)
 
-(newline)
+;; (display  (format "B:~a" (tst-add2 100))) 
+
+;; (newline)
 
 
+;; parse
+(define parse character-string-parser)
+;; run
+;; (define run
+;;   (lambda (x)
+;;     (eval-exp (parse x))))
 

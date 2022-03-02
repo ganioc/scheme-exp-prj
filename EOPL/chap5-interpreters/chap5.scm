@@ -156,6 +156,10 @@
   (lambda (rands)
     (map eval-exp rands)))
 
+
+;; (load "abstract-syntax.scm")
+;; (define parse character-string-parser)
+
 (define run
   (lambda (x)
     (eval-exp (parse x))))

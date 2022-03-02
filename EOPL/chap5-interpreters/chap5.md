@@ -1,3 +1,9 @@
+books:
+- Essentials of Programming Languages
+- Types and Programming Languages
+- Programming Languages: Application and Interpretation
+- The Formal Semantics of Programming Languages: An Introduction
+
 # Interpreters 解释器，翻译员,
 P163,
 前4章为基础理论, 第5章讲述如何来描述编程语言的语法。
@@ -332,6 +338,11 @@ P493
 token-seq-head,
 token-seq-tail
 
+char-seq-head, not found?? car,
+emit is not bound? 我发现我看的这本书是缺页的。appendex部分。就是没有的！
+
+
+
 ftp.cs.indiana.edu:pub/eopl
 www.cs.indiana.edu/hyplan/chaynes/eopl.html
 
@@ -358,13 +369,120 @@ reports and various books.
     Includes sources to several interpreters for Lisp-like languages, and a pointer to sources via anonymous ftp
 <Les Langages Lisp>
 
+### character-string-parser,
+P169,
+命名为parse, 
+调用:
+(parse-token-seq parse-from
+                (character-string-scanner a-string))
+
+character-string-scanner,
+    (scan-char-seq scanner-start-state
+                    (string->list (string-append a-string (string #\^))))
+以#\^为结尾标示 ,将字符串分解为一个字符数组，列表,
+scan-char-seq,
+    接受参数: start-state, char-seq,
+    next-answer=scan-once start-state, char-seq,
+        先使用scan-once 来处理，然后根据返回, 来调用
+        scanner-answer, 里面包含了成员: token unscanned, 再继续进行处理,直到最后为止;
+
+scan-once,
+    (goto-scanner-state start-state)根据当前状态返回一个状态处理函数,
+        返回一个函数，接受参数为 (buffer, char-seq)
+        输入参数为, ‘（）， char-seq，
+            处理第一个字符,char-seq-head, 这个是去取list的第一个成员,
+        state处理第一个字符，然后返回一个函数，处理'(), char-seq,
 
 
+scanner-start-state, 这个是?  是一个函数，接受一个字符, 调用
+    drop, 赋予一个函数, 用它来处理( buffer, (cdr char-seq))
+    shift, 赋予一个函数，用它来处理((cons (car char-seq) buffer), (cdr char-seq))
+    emit,
+    error, 无效的字符收到,
+
+语句输入要求:
+每一个表达式都以begin开始，
+ expression里面一样，每一条表达式都以;结尾
+最后一个表达式输入后，必须以end结尾
+当parse tree按顺序consumed,每一个tree都被评估，运算，运算结果返回，跟着一个新的prompt,
+eval-print表示了evaluation的desired form, 
+
+make-scanner-answer,
+
+token - class, data,
+    terminator, emit-list,
+    separator, 
+    token, 
+    during, 这是什么?
+    assign-sym, 
+
+parse-loop*, (terminator, separator, action)
+
+parse-loop+, (terminator , separator, action)
+
+parse-form, 根据token的种类来选择parser, 对token进行解析, 
+    define, seen-define,
+    define-array, seen-definearray
+    parse-exp,
+        * number, seen-number, 
+        * variable, seen-variable,
+        * lparen, seen-lparen
+        * seen-if
+        * seen-let
+        * seen-proc,
+        * seen-begin,
+        * seen-letmutable,
+        * seen-letrecproc,
+        * seen-letrec,
+        * seen-letdynamic,
+        * seen-letarray,
+        * seen-letproc,
+        * seen-local
+        * seen-dollar-sign,
+        * seen-ampersand,
+        * seen-double-ampersand,
+        * seen-method
+        * seen-simpleclass,
+        * seen-class,
+        * seen-instance,
+        * seen-abort,
+        * seen-letcont,
+        * seen-callcc,
+        * seen-coroutine,
+        * seen-wind,
+        * seen-sum,
+
+parse/var,
+    lparen, seen-var&lparen,
+    assign-sym, seen-var&assign-sym ,
+    lbracket, seen-var*lbracket,
+    else, reduce 'varref,
+
+get-constructor-from-name,
+
+process-nt, 这个是一个非常重要的函数,
 
 
+reduce, 是什么意思呢？
 
+### 字符解析
+shift, 
 
+drop/
 
+goto-scanner-state,
+
+emit, cooker, 获取一个token, 
+
+token-seq,  token, thunk, 
+token, class, data,
+scanner-answer, token, unscanned, 生成一个 scanner-answer, 
+parser-answer, tree, unparsed,
+
+keywords-list, 里面是所有的关键字,
+
+Q: 出现问题,(define) 语句报错。
+A: 重新写一下，又没问题了。
 
 
 
